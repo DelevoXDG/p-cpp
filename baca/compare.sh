@@ -1,5 +1,5 @@
 #!/bin/bash
-max=7
+max=8
 
 make make FILES="${1}" EXE="exe1"
 make make FILES="${2}" EXE="exe2"

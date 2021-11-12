@@ -1,0 +1,17 @@
+gracz a
+    wygrane: 66.6667%
+    przegrane: 33.3333%
+
+gracz b
+    wygrane: 25%
+    przegrane: 75%
+
+gracz c
+    wygrane: 66.6667%
+    przegrane: 33.3333%
+
+gracz e
+    wygrane: 33.3333%
+    remisy: 33.3333%
+    przegrane: 33.3333%
+    

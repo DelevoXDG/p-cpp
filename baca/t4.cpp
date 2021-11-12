@@ -62,7 +62,8 @@ int main()
     int max12 = 0;
     int max2 = 0;
     int max22 = 0;
-    int pairs = 0;
+    int pairs1 = 0;
+    int pairs2 = 0;
     int result2 = 0;
     int currentDie = 0;
     int outcome = 0;
@@ -95,7 +96,8 @@ int main()
         max12 = 0;
         max2 = 0;
         max22 = 0;
-        pairs = 0;
+        pairs1 = 0;
+        pairs2 = 0;
         currentDie = 0;
         outcome = 0;
         // 1 - p1 wins
@@ -103,7 +105,7 @@ int main()
         // 3 - p2 wins
 
         //SECTION RESULTS: PLAYER 1
-        pairs = 0;
+        pairs1 = 0;
         sum1 = d11 + d12 + d13 + d14;
         if ((d11 == d12) && (d11 == d13) && (d11 == d14))
         {
@@ -126,41 +128,41 @@ int main()
         else if ((d11 == d12) || (d11 == d13) || (d11 == d14) || (d12 == d13) || (d12 == d14) || (d13 == d14))
         {
             currentDie = 0;
-            pairs = 0;
+            pairs1 = 0;
 
             if (d11 == d12 || d11 == d13 || d11 == d14)
             {
                 currentDie = d11;
-                pairs++;
+                pairs1++;
                 if (currentDie > max1)
                     max1 = currentDie;
             }
             if (d12 == d13 || d12 == d14)
             {
                 currentDie = d12;
-                pairs++;
+                pairs1++;
                 if (currentDie > max1)
                     max1 = currentDie;
             }
             if (d13 == d14)
             {
                 currentDie = d13;
-                pairs++;
+                pairs1++;
                 if (currentDie > max1)
                     max1 = currentDie;
             }
 
-            if (pairs == 1)
+            if (pairs1 == 1)
             {
                 result1 = 5; //Result - One Pair
             }
-            if (pairs == 2)
+            if (pairs1 == 2)
             {
                 result1 = 3; //Result - Two Pair
             }
         }
         //RESULTS: PLAYER 1 - END
-        pairs = 0;
+        pairs2 = 0;
         //SECTION RESULTS: PLAYER 2
         sum2 = d21 + d22 + d23 + d24;
 
@@ -188,34 +190,34 @@ int main()
         {
             //Result - Pairs
             currentDie = 0;
-            pairs = 0;
+            pairs2 = 0;
             if (d21 == d22 || d21 == d23 || d21 == d24)
             {
                 currentDie = d21;
-                pairs++;
+                pairs2++;
                 if (currentDie > max2)
                     max2 = currentDie;
             }
             if (d22 == d23 || d22 == d24)
             {
                 currentDie = d22;
-                pairs++;
+                pairs2++;
                 if (currentDie > max2)
                     max2 = currentDie;
             }
             if (d23 == d24)
             {
                 currentDie = d23;
-                pairs++;
+                pairs2++;
                 if (currentDie > max2)
                     max2 = currentDie;
             }
 
-            if (pairs == 1)
+            if (pairs2 == 1)
             {
                 result2 = 5; //Result - One Pair
             }
-            if (pairs == 2)
+            if (pairs2 == 2)
             {
                 result2 = 3; //Result - Two Pair
             }
@@ -231,9 +233,24 @@ int main()
         else if (result1 == result2)
         {
             if (result1 == 1)
-                outcome = 2;
+
+            {
+                if (max1 > max2)
+                    outcome = 1;
+                else if (max1 < max2)
+                    outcome = 3;
+                else
+                    outcome = 2;
+            }
             else if (result1 == 2)
-                outcome = 2;
+            {
+                if (max1 > max2)
+                    outcome = 1;
+                else if (max1 < max2)
+                    outcome = 3;
+                else
+                    outcome = 2;
+            }
             else if (result1 == 3)
             {
                 if (max1 > max2)
