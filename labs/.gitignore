@@ -1,3 +1,4 @@
+
 ### C++ ###
 # Prerequisites
 *.d
@@ -396,7 +397,6 @@ FodyWeavers.xsd
 # VS Code files for those working on multiple tools
 .vscode/*
 
-
 # Local History for Visual Studio Code
 .history/
 
@@ -415,7 +415,3 @@ FodyWeavers.xsd
 [Mm]isc/
 [Rr]ef/
 [Gg]lobal[Rr]ef/
-
-# BaCa
-.baca/
-bTasks/
