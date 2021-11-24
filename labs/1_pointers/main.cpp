@@ -30,7 +30,8 @@ void arrDisplay(float** arr, int arrSizeX, int arrSizeY)
     {
         int j = 0;
         while (j < arrSizeY) {
-            cout << *(*(arr + i) + j) << " ";
+            //cout << *(*(arr + i) + j) << " ";
+            cout << *(arr[i] + j) << " ";
             j++;
         }
         cout << endl;
@@ -86,11 +87,14 @@ int main()
     srand(time(0));
 
     const int n = 5;
+    //standard 
     int** intArray;
     intArray = new int* [n];
+
     for (int i = 0; i < n; i++) {
         intArray[i] = new int[n];
     }
+
 
     float** floatArray = new float* [n];
     for (int i = 0; i < n; i++) {
