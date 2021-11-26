@@ -7,96 +7,10 @@
 using std::cin;
 using std::cout;
 using std::endl;
-using std::string;
-
-void swap(int* ptr1, int* ptr2)
-{
-    int tmp = 0;
-    tmp = *ptr1;
-    *ptr1 = *ptr2;
-    *ptr2 = tmp;
-}
-
-void arrDisplay(int* ptr, int arraySize)
-{
-    //TODO DISABLE
-    int* array = ptr; // Passing array
-    int n = arraySize; // Passing array size
-
-    int first = 0; // First Elemet
-    int count = 0; // Makes sure we cycle once through the loop
-    int i = 0;
-    i = first % n;
-    while (count < n)
-    {
-        i = i % n; // Converted to "actual" index
-        cout << array[i] << " ";
-        i++;
-        count++;
-    }
-    cout << endl;
-}
-
-void arrSwap(int* ptr, int arraySize)
-{
-    int* array = ptr; // Passing array
-    int n = arraySize; // Passing array size
-    int first = 0; // First Elemet
-    int count = 0; // Makes sure we cycle once through the loop 2
-    int fragmentLength = 0; // Fragment length used in operation 
-    int unmoved = n; // Elements left to move
-
-    cin >> first;
-    cin >> fragmentLength;
-
-    int i = 0; //Current Element
-    int j = 0; //Iterator to swap all elements at given [i]
-    i = (first % n + n) % n;
-    int destination = 0;
-    //net
-
-    while ((unmoved - (2 * fragmentLength)) >= 0)
-    {
-        i = i % n;
-        j = 0;
-        count = 0;
-        //cout << "loop 0" << endl;
-
-        j = (i + j) % n;
-        while (count < fragmentLength)
-        {
-
-            j = j % n;
-            destination = (j + fragmentLength) % n;
-            //cout << "[" << j + 1 << "] " << array[j] << " [" << destination + 1 << "] " << array[destination] << endl;
-            //cout << "swapped: " << endl;
-            swap(&array[j], &array[destination]);
-            //cout << "[" << j + 1 << "] " << array[j] << " [" << destination + 1 << "] " << array[destination] << endl;
-            //cout << "----------------------------------------------------" << endl;
-            j++;
-            unmoved -= 2;
-            count++;
-        }
-        i += 2 * fragmentLength;
-    }
-
-
-}
-
-
-
-int* arrReverse(int* ptr, int arraySize)
-{
-    return ptr;
-}
-
-
-
 
 int main()
 {
     //SECTION INIT VARIABLES
-    //FIXME FUNCTIONS ARE NOT ALLOWED
     int pendingRounds = 0;
     cin >> pendingRounds;
     char selection = ' ';
@@ -106,7 +20,7 @@ int main()
         //SECTION ARRAY SET UP
         int n = 0;
         cin >> n;
-        int currentArray[n] = {};
+        int currentArray[n];
         int* array = currentArray;
         int iter = 0;
         int first = 0; // First Elemet
@@ -120,8 +34,8 @@ int main()
         }
 
         //SECTION Display Array
-
-        first = 0; count = 0; i = 0; //Reset first, count that breaks loop, and iterator
+        //TODO CANT BE ZERO!!!!
+        first = 0; count = 0; i = 0; //Reset first, count that exits loop, and iterator
         i = first % n; //Set iterator to "actual" index
 
         while (count < n) {
@@ -141,17 +55,138 @@ int main()
 
             if (selection == 'R')
             {
+                //SECTION REVERSE
+                int first = 0; // First Elemet
+
+                int fragmentLength = 0; // Fragment length used in operation
+                int gcd = 0; // Sets left to move
+                int unmoved = n;
+                int shift = 0; //Number of positions to be moved
+
+                cin >> first;
+                cin >> fragmentLength;
+
+                iter = (first % n + n) % n; //Note Have to make sure we take care of negative first
+                int dest = 0;
+
+                while ((fragmentLength <= unmoved) && fragmentLength > 0)
+                {
+                    iter = iter % n;
+
+
+                    // int start = iter, end = iter + fragmentLength;
+                    int count = fragmentLength / 2;
+                    int i = 0, j = i + fragmentLength - 1;
+
+                    while (count--) {
+
+
+                        // int acti = ((i % fragmentLength) % n + n) % n;
+                        // int actj = ((i % fragmentLength) % n + n) % n;
+                        int acti = ((iter + i) % n + n) % n;
+                        int actj = ((iter + j) % n + n) % n;
+
+                        int temp = array[acti];
+                        array[acti] = array[actj];
+                        array[actj] = temp;
+
+                        // Update the i and j
+                        i++; j--;
+
+                        // If end equals to -1
+                        // set end = N-1
+                    }
+
+                    unmoved -= fragmentLength;
+                    iter += fragmentLength;
+                }
+
+
+
+                iter = (first % n + n) % n; //Note Have to make sure we take care of negative "first"
 
             }
             else if (selection == 'C')
             {
-                //SECTION MOVE  
-                //Note
+                //SECTION SHIFT 
 
-                // input: R a b c
-                // Операция в каждом фрагменте длины b и заданном индексе
-                // первого элемента а переносит элементы на желамое количестве позиций
-                //
+                int first = 0; // First Elemet
+
+                int fragmentLength = 0; // Fragment length used in operation
+                int gcd = 0; // Sets left to move
+                int unmoved = n;
+                int shift = 0; //Number of positions to be moved
+                int inshift = 0; //Backup of initial shift
+
+                cin >> first;
+                cin >> fragmentLength;
+                cin >> inshift;
+
+                if (fragmentLength) {
+
+                    if (inshift >= 0)
+                        shift = fragmentLength - inshift % fragmentLength; //Note Shift right
+                    else
+                        shift = (-inshift) % fragmentLength; //Note Shift Left
+
+
+
+
+                    iter = (first % n + n) % n; //Note Have to make sure we take care of negative "first"
+                    while (unmoved > 0)// Less than number of fragments
+                    {
+                        iter = iter % n; //current element in loop 0
+
+
+                        if (unmoved < fragmentLength)
+                        {
+                            fragmentLength = unmoved;
+                            if (inshift >= 0)
+                                shift = fragmentLength - inshift % fragmentLength; //Note Shift right
+                            else
+                                shift = (-inshift) % fragmentLength; //Note Shift Left
+                        }
+                        int number = fragmentLength; int divisor = shift;
+                        if (shift != 0) {
+                            while ((number % divisor) > 0) {
+                                int R = number % divisor; //a=b*k+r
+                                number = divisor;
+                                divisor = R;
+                            }
+                        }
+                        gcd = divisor;
+                        int i = 0; //pseudo sub-array in loop 1 (%shift)
+                        int j = 0; //pseudo moving iterator in loop 2 (%shift)
+                        //cout << "----------------------------------------------------------------" << endl;
+                        while (i < gcd && shift != 0)
+                        {
+
+
+                            int tmp = array[(iter + i) % n];
+                            j = i;
+                            int dest = 0;
+                            do
+                            {
+                                dest = (j + shift) % fragmentLength; //FIX
+
+                                array[(iter + j) % n] = array[(iter + dest) % n]; unmoved--;
+                                if (dest != i) j = dest;
+                            } while (dest != i);
+                            array[(j + iter) % n] = tmp;
+                            //tmp TEST
+
+                            //cout << endl;
+                            //!tmp test
+                            i++;
+
+                        }
+                        if (shift == 0) unmoved -= fragmentLength;
+                        //gcd += fragmentLength;
+                        //fragments--;
+                        iter += fragmentLength;
+                    }
+                }
+
 
 
 
@@ -171,7 +206,7 @@ int main()
                 int i = 0; //Current Element
                 int j = 0; //Iterator to swap all elements at given [i]
                 i = (first % n + n) % n; //Note Have to make sure we take care of negative first
-                int destination = 0;
+                int dest = 0;
 
                 while ((unmoved - (2 * fragmentLength)) >= 0)
                 {
@@ -182,12 +217,12 @@ int main()
                     while (count < fragmentLength)
                     {
                         j = j % n;
-                        destination = (j + fragmentLength) % n;
+                        dest = (j + fragmentLength) % n;
 
                         int tmp = 0;
                         tmp = array[j];
-                        array[j] = array[destination];
-                        array[destination] = tmp;
+                        array[j] = array[dest];
+                        array[dest] = tmp;
 
                         j++; unmoved -= 2; count++;
                     }
@@ -201,7 +236,7 @@ int main()
             }
         }
         //SECTION DISPLAY AGAIN 
-        first = 0; count = 0; i = 0; //Reset first, count that breaks loop, and iterator
+        first = 0; count = 0; i = 0; //Reset first, count that exits loop, and iterator
         i = first % n; //Set iterator to "actual" index
 
         while (count < n) {
@@ -209,7 +244,6 @@ int main()
             cout << array[i] << " ";
             i++; count++;
         }
-        cout << endl;
 
         pendingRounds--;
 
