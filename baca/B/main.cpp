@@ -8,7 +8,7 @@ int main()
 {
     int pendingRounds = 0;
     cin >> pendingRounds;
-    char selection = ' ';
+char selection = ' ';
 
     while (pendingRounds > 0)
     {
@@ -63,8 +63,6 @@ int main()
                 {
                     iter = iter % n;
 
-
-
                     int count = fragmentLength / 2;
                     int i = 0, j = i + fragmentLength - 1;
 
@@ -87,7 +85,6 @@ int main()
             else if (selection == 'C')
             {
                 //SECTION SHIFT 
-
                 int first = 0;
 
                 int fragmentLength = 0;
@@ -106,10 +103,6 @@ int main()
                         shift = fragmentLength - inshift % fragmentLength; //Note Shift right
                     else
                         shift = (-inshift) % fragmentLength; //Note Shift Left
-
-
-
-
                     iter = (first % n + n) % n;
                     while (unmoved > 0)
                     {
@@ -124,6 +117,7 @@ int main()
                             else
                                 shift = (-inshift) % fragmentLength; //Note Shift Left
                         }
+
                         int number = fragmentLength; int divisor = shift;
                         if (shift != 0) {
                             while ((number % divisor) > 0) {
@@ -213,8 +207,6 @@ int main()
         pendingRounds--;
 
     }
-
-
     return 0;
 
 }

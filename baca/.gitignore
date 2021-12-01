@@ -426,3 +426,5 @@ bTasks/
 *.code-workspace
 .terminal-presets.json 
 
+#Tests
+Tests/
