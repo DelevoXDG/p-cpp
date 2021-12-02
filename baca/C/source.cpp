@@ -153,6 +153,7 @@ void Intersection(int* A, int* B, int* C)
 			}
 		}
 	}
+
 	if (sizeC > 1)
 	{
 		BasicSort(C, sizeC);
@@ -160,7 +161,90 @@ void Intersection(int* A, int* B, int* C)
 	C[sizeC] = -1;
 }
 
+void Difference(int* A, int* B, int* C)
+{
+	int sizeA = size(A);
+	int sizeB = size(B);
+	int sizeC = 0;
+	for (int i = 0; i < sizeA; i++)
+	{
+		bool isDuplicate = false;
+		bool doesInterect = false;
+		if (A[i] <= 4095 && A[i] >= 1)
+		{
+			for (int d = 0;d < sizeC;d++)
+			{
+				if (A[i] == C[d]) isDuplicate = true;
+			}
+			if (!isDuplicate)
+			{
+				for (int j = 0; j < sizeB;j++)
+					if (B[j] == A[i]) doesInterect = true;
+			}
+			if (!isDuplicate && !doesInterect)
+			{
+				C[sizeC] = A[i];
+				sizeC++;
+			}
+		}
+	}
+	if (sizeC > 1)
+	{
+		BasicSort(C, sizeC);
+	}
+	C[sizeC] = -1;
+}
 
+void Symmetric(int* A, int* B, int* C)
+{
+	int sizeA = size(A);
+	int sizeB = size(B);
+	int sizeC = 0;
+	for (int i = 0; i < sizeA; i++)
+	{
+		bool isDuplicate = false;
+		bool doesInterect = false;
+		if (A[i] <= 4095 && A[i] >= 1)
+		{
+			for (int d = 0;d < sizeC;d++)
+			{
+				if (A[i] == C[d]) isDuplicate = true;
+			}
+			for (int j = 0; j < sizeB;j++)
+				if (B[j] == A[i]) doesInterect = true;
+			if (!isDuplicate && !doesInterect)
+			{
+				C[sizeC] = A[i];
+				sizeC++;
+			}
+		}
+	}
+	for (int i = 0; i < sizeB; i++)
+	{
+		bool isDuplicate = false;
+		bool doesInterect = false;
+		if (B[i] <= 4095 && B[i] >= 1)
+		{
+			for (int d = 0;d < sizeC;d++)
+			{
+				if (B[i] == C[d]) isDuplicate = true;
+			}
+			for (int j = 0; j < sizeA;j++)
+				if (A[j] == B[i]) doesInterect = true;
+			if (!isDuplicate && !doesInterect)
+			{
+				C[sizeC] = B[i];
+				sizeC++;
+			}
+		}
+	}
+
+	if (sizeC > 1)
+	{
+		BasicSort(C, sizeC);
+	}
+	C[sizeC] = -1;
+}
 
 
 
