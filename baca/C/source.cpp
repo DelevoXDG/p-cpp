@@ -50,7 +50,13 @@ void Create(int n, int in[], int out[])
 	int i = 0; int o = 0;
 	while (i < n)
 	{
-		if (in[i] <= 4095 && in[i] >= 1)
+		bool isDuplicate = false;
+		for (int d = 0;d < o;d++)
+		{
+			if (in[i] == out[d])
+				isDuplicate = true;
+		}
+		if (in[i] <= 4095 && in[i] >= 1 && !isDuplicate)
 		{
 			out[o] = in[i];
 			o++;
@@ -60,14 +66,14 @@ void Create(int n, int in[], int out[])
 	if (o > 1)
 	{
 		BasicSort(out, o);
-		o = RemoveDuplicatesSorted(out, o);
+		//o = RemoveDuplicatesSorted(out, o);
 	}
 	out[o] = -1;
 
 
 }
 
-// /*
+/*
 int main(int argc, const char** argv)
 {
 
@@ -94,7 +100,7 @@ int main(int argc, const char** argv)
 	}
 	return 0;
 }
-// */
+*/
 
 
 
