@@ -280,6 +280,24 @@ void Complement(int* A, int* C)
 	C[sizeC] = -1;
 }
 
+bool Subset(int* A, int* B)
+{
+	//A - subset of B? 
+	int sizeA = size(A);
+	int sizeB = size(B);
+	int i = 0;
+	bool isElement = true;
+	while (i < sizeA && isElement)
+	{
+		isElement = false;
+		for (int j = 0; j < sizeB;j++) //check whether A[x] is an element of B 
+			if (A[i] == B[j]) isElement = true;
+		i++;
+	}
+	return isElement;
+
+}
+
 
 
 
