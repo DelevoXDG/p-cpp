@@ -5,10 +5,9 @@ using std::cin; using std::cout; using std::endl; using std::string;
 
 //SECTION TODO
 //[X] RemoveDuplicates
-//[X] CREATE
-//[ ] Add
-//[ ] Create
-//[ ] Union
+//[X] Create
+//[x] Add
+//[x] Union
 //[ ] Intersection
 //[ ] Difference
 //[ ] Symmetric
@@ -127,15 +126,38 @@ void Union(int* A, int* B, int* out)
 	BasicSort(out, o);
 }
 
-void Intersection(int* A, int* B, int* out)
+void Intersection(int* A, int* B, int* C)
 {
 	int sizeA = size(A);
 	int sizeB = size(B);
+	int sizeC = 0;
 	for (int i = 0; i < sizeA; i++)
 	{
-
+		bool isDuplicate = false;
+		bool doesInterect = false;
+		if (A[i] <= 4095 && A[i] >= 1)
+		{
+			for (int d = 0;d < sizeC;d++)
+			{
+				if (A[i] == C[d]) isDuplicate = true;
+			}
+			if (!isDuplicate)
+			{
+				for (int j = 0; j < sizeB;j++)
+					if (B[j] == A[i]) doesInterect = true;
+			}
+			if (!isDuplicate && doesInterect)
+			{
+				C[sizeC] = A[i];
+				sizeC++;
+			}
+		}
 	}
-
+	if (sizeC > 1)
+	{
+		BasicSort(C, sizeC);
+	}
+	C[sizeC] = -1;
 }
 
 
