@@ -3,28 +3,8 @@
 #include <iostream>
 using std::cin; using std::cout; using std::endl; using std::string;
 
-//SECTION TODO
-//[X] RemoveDuplicates
-//[X] Create
-//[x] Add
-//[x] Union
-//[X] Intersection
-//[X] Difference
-//[X] Symmetric
-//[X] Complement;
-//[ ] Subset;
-//[ ] Equal;
-//[ ] Empty;
-//[ ] Nonempty;
-//[ ] Element;
-//[ ] Arithmetic;
-//[ ] Harmonic;
-//[ ] MinMax;
-//[ ] Cardinality
-
-
 //SECTION HELPER FUNCTIONS	
-void BasicSort(int in[], int arrSize) {
+void BasicSort(int* in, int arrSize) {
 
 	for (int i = 0; i < arrSize; ++i)
 	{
@@ -41,14 +21,14 @@ void BasicSort(int in[], int arrSize) {
 	}
 }
 
-int size(int in[]) {
+int size(int* in) {
 	int n = 0;
 	while (in[n] != -1)
 		n++;
 	return n;
 }
 
-void AddNoSort(int num, int out[])
+void AddNoSort(int num, int* out)
 {
 	int in[] = { num };
 	int n = 0;
@@ -69,7 +49,7 @@ void AddNoSort(int num, int out[])
 }
 
 //SECTION MAIN FUNCTIONS
-void Add(int num, int out[])
+void Add(int num, int* out)
 {
 	int in[] = { num };
 	int n = 0;
@@ -91,7 +71,7 @@ void Add(int num, int out[])
 
 }
 
-void Create(int n, int in[], int out[])
+void Create(int n, int* in, int* out)
 {
 	int i = 0; int o = 0;
 	while (i < n)
@@ -295,8 +275,114 @@ bool Subset(int* A, int* B)
 		i++;
 	}
 	return isElement;
-
 }
+
+bool Equal(int* A, int* B)
+{
+	//A - subset of B? 
+	int sizeA = size(A);
+	int sizeB = size(B);
+	int i = 0;
+	bool isElement = true;
+	while (i < sizeA && isElement)
+	{
+		isElement = false;
+		for (int j = 0; j < sizeB;j++) //check whether A[x] is an element of B 
+			if (A[i] == B[j]) isElement = true;
+		i++;
+	}
+	i = 0;
+	while (i < sizeB && isElement)
+	{
+		isElement = false;
+		for (int j = 0; j < sizeA;j++) //check whether B[x] is an element of A 
+			if (B[i] == A[j]) isElement = true;
+		i++;
+	}
+	return isElement;
+}
+
+bool Empty(int* A)
+{
+	if (A[0] == -1) return 1;
+	else return 0;
+}
+
+bool Nonempty(int* A)
+{
+	return (!Empty(A));
+}
+
+bool Element(int num, int* A)
+{
+	int sizeA = size(A);
+	bool isElement = false;
+	for (int j = 0; j < sizeA;j++) //check whether x is an element of A 
+		if (num == A[j]) isElement = true;
+	return isElement;
+}
+
+double Arithmetic(int* A)
+{
+	int sizeA = size(A);
+	if (Empty(A))  return 0;
+	double sum = 0;
+	for (int i = 0; i < sizeA;i++)
+		sum += A[i];
+	return sum / (sizeA);
+}
+
+double Harmonic(int* A)
+{
+	double sizeA = 1.0 * size(A);
+	if (Empty(A)) return 1;
+	double sum = 0;
+	for (int i = 0; i < sizeA;i++)
+		sum += (1 / (A[i] * 1.0));
+	return (sizeA / sum);
+}
+
+void MinMax(int* A, int* min, int& max)
+{
+	int sizeA = size(A);
+	if (Nonempty(A)) {
+		*min = A[0];
+		max = A[0];
+
+		for (int i = 0; i < sizeA; i++)
+		{
+			if (A[i] > max)
+				max = A[i];
+			if (A[i] < *min)
+				*min = A[i];
+		}
+	}
+}
+
+void Cardinality(int* A, int* power)
+{
+	*power = size(A);
+}
+
+void Properties(int* A, char* args, double& arithmetic, double* harmonic, int& min, int* max, int& power)
+{
+	int n = 0;
+	while (args[n] != '\0') {
+		n++;
+	}
+	for (int i = 0; i < n; i++)
+	{
+		if (args[i] == 'a') arithmetic = Arithmetic(A);
+		else if (args[i] == 'h') *harmonic = Harmonic(A);
+		else if (args[i] == 'm') MinMax(A, &min, *max);
+		else if (args[i] == 'c') Cardinality(A, &power);
+	}
+}
+
+
+
+
+
 
 
 
