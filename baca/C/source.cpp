@@ -8,10 +8,10 @@ using std::cin; using std::cout; using std::endl; using std::string;
 //[X] Create
 //[x] Add
 //[x] Union
-//[ ] Intersection
-//[ ] Difference
-//[ ] Symmetric
-//[ ] Complement;
+//[X] Intersection
+//[X] Difference
+//[X] Symmetric
+//[X] Complement;
 //[ ] Subset;
 //[ ] Equal;
 //[ ] Empty;
@@ -239,6 +239,40 @@ void Symmetric(int* A, int* B, int* C)
 		}
 	}
 
+	if (sizeC > 1)
+	{
+		BasicSort(C, sizeC);
+	}
+	C[sizeC] = -1;
+}
+
+void Complement(int* A, int* C)
+{
+	int sizeA = size(A);
+	int sizeC = 0;
+	for (int i = 1; i <= 4095; i++)
+	{
+		bool isDuplicate = false;
+		bool doesInterect = false;
+		for (int d = 0;d < sizeC;d++)
+		{
+			if (i == C[d]) isDuplicate = true;
+		}
+		if (!isDuplicate)
+		{
+			int j = 0;
+			while (j < sizeA && !doesInterect)
+			{
+				if (i == A[j]) doesInterect = true;
+				j++;
+			}
+		}
+		if (!isDuplicate && !doesInterect)
+		{
+			C[sizeC] = i;
+			sizeC++;
+		}
+	}
 	if (sizeC > 1)
 	{
 		BasicSort(C, sizeC);
