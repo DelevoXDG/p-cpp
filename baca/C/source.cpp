@@ -262,7 +262,7 @@ void Complement(int* A, int* C)
 
 bool Subset(int* A, int* B)
 {
-	//A - subset of B? 
+
 	int sizeA = size(A);
 	int sizeB = size(B);
 	int i = 0;
@@ -270,7 +270,7 @@ bool Subset(int* A, int* B)
 	while (i < sizeA && isElement)
 	{
 		isElement = false;
-		for (int j = 0; j < sizeB;j++) //check whether A[x] is an element of B 
+		for (int j = 0; j < sizeB;j++)
 			if (A[i] == B[j]) isElement = true;
 		i++;
 	}
@@ -279,7 +279,7 @@ bool Subset(int* A, int* B)
 
 bool Equal(int* A, int* B)
 {
-	//A - subset of B? 
+
 	int sizeA = size(A);
 	int sizeB = size(B);
 	int i = 0;
@@ -287,7 +287,7 @@ bool Equal(int* A, int* B)
 	while (i < sizeA && isElement)
 	{
 		isElement = false;
-		for (int j = 0; j < sizeB;j++) //check whether A[x] is an element of B 
+		for (int j = 0; j < sizeB;j++)
 			if (A[i] == B[j]) isElement = true;
 		i++;
 	}
@@ -295,7 +295,7 @@ bool Equal(int* A, int* B)
 	while (i < sizeB && isElement)
 	{
 		isElement = false;
-		for (int j = 0; j < sizeA;j++) //check whether B[x] is an element of A 
+		for (int j = 0; j < sizeA;j++)
 			if (B[i] == A[j]) isElement = true;
 		i++;
 	}
@@ -317,7 +317,7 @@ bool Element(int num, int* A)
 {
 	int sizeA = size(A);
 	bool isElement = false;
-	for (int j = 0; j < sizeA;j++) //check whether x is an element of A 
+	for (int j = 0; j < sizeA;j++)
 		if (num == A[j]) isElement = true;
 	return isElement;
 }
@@ -378,16 +378,3 @@ void Properties(int* A, char* args, double& arithmetic, double* harmonic, int& m
 		else if (args[i] == 'c') Cardinality(A, &power);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
