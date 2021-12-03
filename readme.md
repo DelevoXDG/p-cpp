@@ -1,2 +1,2 @@
 # P1 Tasks
-P1 tasks for UJ students
+Programmming 1 assingments (UJ)
