@@ -2,7 +2,6 @@
 *
 */
 !.gitignore
-!Assignments/*/*
 
 # C++ files
 *.slo
@@ -11,11 +10,11 @@
 *.obj
 *.d
 
-!*.cpp
-!*.c
-!*.hpp
-!*.h
-!*makefile
+!*/*.cpp
+!*/*/*.c
+!*/*.hpp
+!*/*.h
+!*/*makefile
 
 # VS Code stuff
 .vscode/*
