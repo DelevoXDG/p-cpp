@@ -1,0 +1,22 @@
+# Everything
+*
+*/
+!.gitignore
+
+# C++ files
+*.slo
+*.lo
+*.o
+*.obj
+*.d
+
+!*/*.cpp
+!*/*/*.c
+!*/*.hpp
+!*/*.h
+!*/*makefile
+
+# VS Code stuff
+.vscode/*
+.vs/*
+
