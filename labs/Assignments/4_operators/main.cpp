@@ -10,8 +10,8 @@ string IP_bin_to_dec(string inIP)
 	inIP += ".";
 	for (int i = 0; i < 4; i++) {
 		int pos = inIP.find(".");
+		ip_string.append(std::to_string(std::stoi(inIP.substr(0, pos), 0, 2))); //Converts current 8bits from BIN to DEC
 		inIP.erase(0, pos + 1);
-		ip_string.append(std::to_string(std::stoi(inIP.substr(0, pos)))); //Converts current 8bits from BIN to DEC
 		if (i < 3) ip_string.append(".");
 	}
 	return ip_string;
@@ -24,7 +24,7 @@ string dec_to_bin(int value) {
 }
 string dec_to_hex(int value) {
 	std::stringstream stream;
-	stream << std::hex << std::uppercase << value;
+	stream << std::hex << std::setfill('0') << std::setw(2) << std::uppercase << value;
 	return stream.str();
 }
 
@@ -50,13 +50,13 @@ string IP_to_base(string inIP, short int base)
 
 bool isIP(string IP)
 {
-	std::regex ipv4("(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])");
-	return std::regex_match(IP, ipv4) ? 1 : 0;
+	std::regex reg_ipv4("(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])");
+	return std::regex_match(IP, reg_ipv4) ? 1 : 0;
 }
 bool isMask(string mask)
 {
-	std::regex subnetMask("((128|192|224|240|248|252|254)\\.0\\.0\\.0)|(255\\.(((0|128|192|224|240|248|252|254)\\.0\\.0)|(255\\.(((0|128|192|224|240|248|252|254)\\.0)|255\\.(0|128|192|224|240|248|252|254)))))$");
-	return std::regex_match(mask, subnetMask) ? 1 : 0;
+	std::regex reg_subnetMask("((128|192|224|240|248|252|254)\\.(0)+\\.(0)+\\.(0)+)|(255\\.((((0)+|128|192|224|240|248|252|254)\\.(0)+\\.(0)+)|(255\\.((((0)+|128|192|224|240|248|252|254)\\.(0)+)|255\\.((0)+|128|192|224|240|248|252|254)))))$");
+	return std::regex_match(mask, reg_subnetMask) ? 1 : 0;
 }
 string subnetMask(string inIP, string inMask) {
 	if (!(isIP(inIP) && isMask(inMask))) return "-1";
@@ -93,7 +93,6 @@ int main(int argc, const char** argv)
 		cout << std::setw(6) << std::left << "# " << std::setw(40) << std::left << "IPv4" << std::setw(40) << std::left << "Subnet Mask" << std::setw(40) << std::left << "Subnet Adress" << endl << endl;
 		cout << std::setw(6) << std::left << "DEC " << std::setw(40) << std::left << ipv4_string << std::setw(40) << std::left << mask_string << std::setw(40) << std::left << subnetAdress_string << endl;
 		cout << std::setw(6) << std::left << "BIN " << std::setw(40) << std::left << IP_to_base(ipv4_string, 2) << std::setw(40) << std::left << IP_to_base(mask_string, 2) << std::setw(40) << std::left << IP_to_base(subnetAdress_string, 2) << endl;
-		cout << std::setw(6) << std::left << "OCT " << std::setw(40) << std::left << IP_to_base(ipv4_string, 8) << std::setw(40) << std::left << IP_to_base(mask_string, 8) << std::setw(40) << std::left << IP_to_base(subnetAdress_string, 8) << endl;
 		cout << std::setw(6) << std::left << "HEX " << std::setw(40) << std::left << IP_to_base(ipv4_string, 16) << std::setw(40) << std::left << IP_to_base(mask_string, 16) << std::setw(40) << std::left << IP_to_base(subnetAdress_string, 16) << endl;
 	}
 	return 0;
