@@ -30,7 +30,6 @@ int size(int* in) {
 
 void AddNoSort(int num, int* out)
 {
-	int in[] = { num };
 	int n = 0;
 	bool isAddable = false;
 	if (num >= 1 && num <= 4095)
@@ -48,10 +47,10 @@ void AddNoSort(int num, int* out)
 	}
 }
 
-//SECTION MAIN FUNCTIONS
+//SECTION REQUIRED FUNCTIONS
 void Add(int num, int* out)
 {
-	int in[] = { num };
+
 	int n = 0;
 	bool isAddable = false;
 	if (num >= 1 && num <= 4095)
