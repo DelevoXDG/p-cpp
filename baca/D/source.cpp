@@ -10,6 +10,7 @@ short int N = 0;
 short int center = 0;
 
 //SECTION FUNCTIONS DECLARATIONS
+long long Determinant(long long matrix[][max_size], int size);
 long long Laplace(long long matrix[][max_size], int size);
 void display_array(long long matrix[][max_size], int size);
 
@@ -83,7 +84,7 @@ int main()
 					}
 				}
 				//display_array(matrix, N);
-				cout << Laplace(matrix, N) << endl;
+				cout << Determinant(matrix, N) << endl;
 				break;
 			}
 		}
@@ -92,6 +93,25 @@ int main()
 	return 0;
 }
 //SECTION FUNCTIONS
+long long Determinant(long long mat[][max_size], int size)
+{
+	long long int det = 0;
+	bool isSame = false;
+	bool currentlySame = true;
+	for (int i = 1; i < size && !isSame;i++) {
+		for (int j = 0; j < size && !isSame && currentlySame;j++)
+		{
+			if (mat[i - 1][j] != mat[i][j])
+			{
+				currentlySame = false;
+			}
+		}
+		if (currentlySame) isSame = true;
+	}
+	if (isSame) return 0;
+	else return Laplace(mat, size);
+}
+
 long long Laplace(long long mat[][max_size], int size)
 {
 	long long int det = 0;
@@ -103,22 +123,23 @@ long long Laplace(long long mat[][max_size], int size)
 		long long sub_mat[max_size][max_size];
 		short int sign = 1;
 		short int shift = 0;
-		for (int col = 0; col < size; col++) {
-			if (mat[0][col]) {
-				for (int i = 1; i < size; i++) {
-					shift = 0;
-					for (int j = 0; j < size; j++) {
-						if (j != col)
-						{
-							sub_mat[i - 1][j - shift] = mat[i][j];
-						}
-						else
-							shift = 1; //Skips over column and writes to proper cell
+		for (int row = 0; row < size; row++) {
+			if (mat[row][0]) {
+				shift = 0;
+				for (int i = 0; i < size; i++)
+				{
+					if (i == row)
+					{
+						shift = 1; continue;
+					}
+					for (int j = 1; j < size; j++)
+					{
+						sub_mat[i - shift][j - 1] = mat[i][j];
 					}
 				}
-				det += sign * mat[0][col] * Laplace(sub_mat, size - 1);
-				sign = -sign;
+				det += sign * mat[row][0] * Laplace(sub_mat, size - 1);
 			}
+			sign = -sign;
 		}
 		return det;
 	}
