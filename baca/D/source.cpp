@@ -10,21 +10,19 @@ short int N = 0;
 short int center = 0;
 
 //SECTION FUNCTIONS DECLARATIONS
-long long Determinant(long long matrix[][max_size], int size);
-long long Laplace(long long matrix[][max_size], int size);
-void display_array(long long matrix[][max_size], int size);
+long long Determinant(const long long int matrix[][max_size], const int size);
+long long Laplace(const long long matrix[][max_size], const int size);
+void display_array(const long long matrix[][max_size], const int size);
+long long int Cuboid(short int l, short int v, short int p, short int h, short int w, short int d);
+long long int Cuboid(short int l, short int v, short int p, short int e);
+
+
 
 //SECTION MAIN
 int main()
 {
 	char select = 0;
 
-	short int l = 0;
-	short int v = 0;
-	short int p = 0;
-	short int h = 0;
-	short int w = 0;
-	short int d = 0;
 
 	cin >> N;
 
@@ -41,9 +39,7 @@ int main()
 		switch (select)
 		{
 			case 'E': //Note Exit
-			{
-				break;
-			}
+			{ break; }
 			case 'D':
 			{
 				//Note Determinant
@@ -59,21 +55,21 @@ int main()
 					{
 						for (int i = 0; i < N; i++) {
 							for (int j = 0; j < N; j++) {
-								matrix[j][i] = cube[i][n][j];
+								matrix[i][j] = cube[i][n][j];
 							}
 						}
 						break;
 					}
-					case 'v': //Note poziom
+					case 'v': //Note Poziom
 					{
 						for (int i = 0; i < N; i++) {
 							for (int j = 0; j < N; j++) {
-								matrix[j][i] = cube[i][j][n];
+								matrix[i][j] = cube[i][j][n];
 							}
 						}
 						break;
 					}
-					case 'p': //Note panel
+					case 'p': //Note Panel
 					{
 						for (int i = 0; i < N; i++) {
 							for (int j = 0; j < N; j++) {
@@ -83,9 +79,43 @@ int main()
 						break;
 					}
 				}
-				//display_array(matrix, N);
+
 				cout << Determinant(matrix, N) << endl;
 				break;
+			}
+			default:
+			{
+				short int l = 0;
+				short int v = 0;
+				short int p = 0;
+				short int h = 0;
+				short int w = 0;
+				short int d = 0;
+				short int e = 0;
+				short int r = 0;
+				switch (select)
+				{
+					case 'C': //Note Cuboid
+					{
+						cin >> l;
+						cin >> v;
+						cin >> p;
+						cin >> h;
+						cin >> w;
+						cin >> d;
+						cout << Cuboid(l, v, p, h, w, d) << endl;
+						break;
+					}
+					case 'T': //Note Pyramid
+					{
+						cin >> l;
+						cin >> v;
+						cin >> p;
+						cin >> r;
+					}
+					break;
+				}
+
 			}
 		}
 	}
@@ -93,16 +123,54 @@ int main()
 	return 0;
 }
 //SECTION FUNCTIONS
-long long Determinant(long long mat[][max_size], int size)
+long long int Cuboid(short int l, short int v, short int p, short int h, short int w, short int d)
+{
+	int poziom = 0;
+	int pion = 0;
+	int panel = 0;
+	long long int sum = 0;
+
+	poziom = l < (N / 2) ? l + h : l - h;
+	pion = v < (N / 2) ? v + w : v - w;
+	panel = p < (N / 2) ? p + d : p - d;
+
+	if (l > poziom) {
+		int tmp = poziom;
+		poziom = l;
+		l = tmp;
+	}
+	if (v > pion) {
+		int tmp = pion;
+		pion = v;
+		v = tmp;
+	}
+	if (p > panel)
+	{
+		int tmp = panel;
+		panel = p;
+		p = tmp;
+	}
+
+	for (int i = p; i <= panel; i++) {
+		for (int j = l; j <= poziom; j++) {
+			for (int k = v; k <= pion; k++) {
+				if (i >= 0 && j >= 0 && k >= 0 && i < N && j < N && k < N) {
+					sum += cube[i][j][k];
+				}
+			}
+		}
+	}
+	return sum;
+}
+
+long long Determinant(const long long int mat[][max_size], const int size)
 {
 	long long int det = 0;
 	bool isSame = false;
 	bool currentlySame = true;
 	for (int i = 1; i < size && !isSame;i++) {
-		for (int j = 0; j < size && !isSame && currentlySame;j++)
-		{
-			if (mat[i - 1][j] != mat[i][j])
-			{
+		for (int j = 0; j < size && !isSame && currentlySame;j++) {
+			if (mat[i - 1][j] != mat[i][j]) {
 				currentlySame = false;
 			}
 		}
@@ -112,7 +180,7 @@ long long Determinant(long long mat[][max_size], int size)
 	else return Laplace(mat, size);
 }
 
-long long Laplace(long long mat[][max_size], int size)
+long long Laplace(const long long mat[][max_size], const int size)
 {
 	long long int det = 0;
 	if (size == 1)
@@ -126,10 +194,8 @@ long long Laplace(long long mat[][max_size], int size)
 		for (int row = 0; row < size; row++) {
 			if (mat[row][0]) {
 				shift = 0;
-				for (int i = 0; i < size; i++)
-				{
-					if (i == row)
-					{
+				for (int i = 0; i < size; i++) {
+					if (i == row) {
 						shift = 1; continue;
 					}
 					for (int j = 1; j < size; j++)
@@ -145,14 +211,15 @@ long long Laplace(long long mat[][max_size], int size)
 	}
 }
 
-void display_array(long long arr[][max_size], int size)
+void display_array(const long long mat[][max_size], const int size)
 {
 	for (int i = 0; i < size; i++)
 	{
 		for (int j = 0; j < size; j++)
 		{
-			cout << arr[i][j] << " ";
+			cout << mat[i][j] << " ";
 		}
 		cout << endl;
 	}
 }
+
