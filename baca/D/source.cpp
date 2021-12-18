@@ -86,41 +86,7 @@ int main()
 			}
 			default: //Note Shapes
 			{
-				// short int l = 0;
-				// short int v = 0;
-				// short int p = 0;
-				// short int h = 0;
-				// short int w = 0;
-				// short int d = 0;
-				// short int e = 0;
-				// short int r = 0;
 				Shapes(select);
-
-				/*
-				switch (select)
-				{
-					case 'C': //Note Cuboid
-					{
-						cin >> l;
-						cin >> v;
-						cin >> p;
-						cin >> h;
-						cin >> w;
-						cin >> d;
-						cout << Cuboid(l, v, p, h, w, d) << endl;
-						break;
-					}
-					case 'T': //Note Pyramid
-					{
-						cin >> l;
-						cin >> v;
-						cin >> p;
-						cin >> e;
-						cout << Pyramid(l, v, p, e) << endl;
-					}
-					break;
-				}
-				*/
 				break;
 			}
 		}
@@ -137,12 +103,12 @@ void Shapes(const char selection)
 	short int h = 0;
 	short int w = 0;
 	short int d = 0;
-	short int e = 0;
 	short int r = 0;
 
 	int poziom = 0;
 	int pion = 0;
 	int panel = 0;
+	short int tmp = 0;
 	long long int sum = 0;
 
 	if (selection == 'C')
@@ -170,17 +136,17 @@ void Shapes(const char selection)
 	panel = p < (N / 2) ? p + d : p - d;
 
 	if (l > poziom) {
-		int tmp = poziom;
+		tmp = poziom;
 		poziom = l;
 		l = tmp;
 	}
 	if (v > pion) {
-		int tmp = pion;
+		tmp = pion;
 		pion = v;
 		v = tmp;
 	}
 	if (p > panel) {
-		int tmp = panel;
+		tmp = panel;
 		panel = p;
 		p = tmp;
 	}
@@ -193,98 +159,11 @@ void Shapes(const char selection)
 					if (selection == 'C' || (selection == 'T' && ((i - p) + (j - l) + (k - v) <= r)) || (selection == 'O' && (power(i - p) + power(j - l) + power(k - v) <= power(r)))) {
 						sum += cube[i][j][k];
 					}
-					else if (selection == 'T' && ((i - p) + (j - l) + (k - v) <= r)) {
-						sum += cube[i][j][k];
-					}
-					else if (selection == 'O' && (power(i - p) + power(j - l) + power(k - v) <= power(r))) {
-						sum += cube[i][j][k];
-					}
 				}
 			}
 		}
 	}
 	cout << sum << endl;
-}
-
-long long int Pyramid(short int l, short int v, short int p, short int e)
-{
-	int poziom = 0;
-	int pion = 0;
-	int panel = 0;
-	long long int sum = 0;
-
-	poziom = l < (N / 2) ? l + e : l - e;
-	pion = v < (N / 2) ? v + e : v - e;
-	panel = p < (N / 2) ? p + e : p - e;
-
-	if (l > poziom) {
-		int tmp = poziom;
-		poziom = l;
-		l = tmp;
-	}
-	if (v > pion) {
-		int tmp = pion;
-		pion = v;
-		v = tmp;
-	}
-	if (p > panel) {
-		int tmp = panel;
-		panel = p;
-		p = tmp;
-	}
-
-	for (int i = p; i <= panel; i++) {
-		for (int j = l; j <= poziom; j++) {
-			for (int k = v; k <= pion; k++) {
-				if (i >= 0 && j >= 0 && k >= 0 && i < N && j < N && k < N) {
-					if (((i - p) + (j - l) + (k - v) <= e)) {
-						sum += cube[i][j][k];
-					}
-				}
-			}
-		}
-	}
-	return sum;
-}
-
-long long int Cuboid(short int l, short int v, short int p, short int h, short int w, short int d)
-{
-	int poziom = 0;
-	int pion = 0;
-	int panel = 0;
-	long long int sum = 0;
-
-	poziom = l < (N / 2) ? l + h : l - h;
-	pion = v < (N / 2) ? v + w : v - w;
-	panel = p < (N / 2) ? p + d : p - d;
-
-	if (l > poziom) {
-		int tmp = poziom;
-		poziom = l;
-		l = tmp;
-	}
-	if (v > pion) {
-		int tmp = pion;
-		pion = v;
-		v = tmp;
-	}
-	if (p > panel)
-	{
-		int tmp = panel;
-		panel = p;
-		p = tmp;
-	}
-
-	for (int i = p; i <= panel; i++) {
-		for (int j = l; j <= poziom; j++) {
-			for (int k = v; k <= pion; k++) {
-				if (i >= 0 && j >= 0 && k >= 0 && i < N && j < N && k < N) {
-					sum += cube[i][j][k];
-				}
-			}
-		}
-	}
-	return sum;
 }
 
 long long Determinant(const long long int mat[][max_size], const short int size)
