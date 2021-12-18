@@ -9,15 +9,10 @@ long long int cube[max_size][max_size][max_size];
 short int N = 0;
 
 //SECTION FUNCTIONS DECLARATIONS
+int Power(const long long int a);
+void Shapes(const char selection);
 long long Determinant(const long long int matrix[][max_size], const short int size);
 long long Laplace(const long long matrix[][max_size], const short int size);
-void display_Matrix(const long long matrix[][max_size], const short int size);
-void Shapes(const char selection);
-int power(const long long int a);
-long long int Cuboid(short int l, short int v, short int p, short int h, short int w, short int d);
-long long int Pyramid(short int l, short int v, short int p, short int e);
-
-
 
 //SECTION MAIN
 int main()
@@ -111,7 +106,7 @@ void Shapes(const char selection)
 	short int tmp = 0;
 	long long int sum = 0;
 
-	if (selection == 'C')
+	if (selection == 'C') //Note Cuboid
 	{
 		cin >> l;
 		cin >> v;
@@ -120,7 +115,7 @@ void Shapes(const char selection)
 		cin >> w;
 		cin >> d;
 	}
-	else if (selection == 'T' || selection == 'O')
+	else if (selection == 'T' || selection == 'O') //Note Pyramid or Octal
 	{
 		cin >> l;
 		cin >> v;
@@ -156,7 +151,13 @@ void Shapes(const char selection)
 			for (int k = v; k <= pion; k++) {
 				if (i >= 0 && j >= 0 && k >= 0 && i < N && j < N && k < N)
 				{
-					if (selection == 'C' || (selection == 'T' && ((i - p) + (j - l) + (k - v) <= r)) || (selection == 'O' && (power(i - p) + power(j - l) + power(k - v) <= power(r)))) {
+					if (selection == 'C') {
+						sum += cube[i][j][k];
+					}
+					else if (selection == 'T' && ((i - p) + (j - l) + (k - v) <= r)) {
+						sum += cube[i][j][k];
+					}
+					else if (selection == 'O' && (Power(i - p) + Power(j - l) + Power(k - v) <= Power(r))) {
 						sum += cube[i][j][k];
 					}
 				}
@@ -169,18 +170,18 @@ void Shapes(const char selection)
 long long Determinant(const long long int mat[][max_size], const short int size)
 {
 	long long int det = 0;
-	bool isSame = false;
 	bool currentlySame = true;
-	for (int i = 1; i < size && !isSame;i++) {
-		for (int j = 0; j < size && !isSame && currentlySame;j++) {
+	for (int i = 1; i < size;i++) {
+		for (int j = 0; j < size && currentlySame;j++) {
 			if (mat[i - 1][j] != mat[i][j]) {
 				currentlySame = false;
 			}
 		}
-		if (currentlySame) isSame = true;
+		if (currentlySame)
+			return 0;
+
 	}
-	if (isSame) return 0;
-	else return Laplace(mat, size);
+	return Laplace(mat, size);
 }
 
 long long Laplace(const long long mat[][max_size], const short int size)
@@ -191,7 +192,7 @@ long long Laplace(const long long mat[][max_size], const short int size)
 	else if (size == 2)
 		return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
 	else {
-		long long sub_mat[max_size][max_size];
+		long long int sub_mat[max_size][max_size];
 		short int sign = 1;
 		short int shift = 0;
 		for (int row = 0; row < size; row++) {
@@ -214,18 +215,6 @@ long long Laplace(const long long mat[][max_size], const short int size)
 	}
 }
 
-int power(const long long int a) {
+int Power(const long long int a) {
 	return a * a;
 }
-
-void display_Matrix(const long long mat[][max_size], const short int size)
-{
-	for (int i = 0; i < size; i++)
-	{
-		for (int j = 0; j < size; j++) {
-			cout << mat[i][j] << " ";
-		}
-		cout << endl;
-	}
-}
-
