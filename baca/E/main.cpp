@@ -48,27 +48,52 @@ public:
 
 	uint8 storageSize;
 	Rack m_handyRack_storage[MAX_RACK];
-	Shelf m_handyShelf_storage[MAX_PLACE];
+	Shelf m_handyShelf_storage[MAX_SHELF];
+};
+
+//SECTION HELPER FUNCTIONS
+struct IOS {
+public:
+
+	static void Output() {
+		std::cout << std::endl;
+	}
+
+	template<typename First, typename ... T>
+	static void Output(First arg, const T&... rest) {
+		std::cout << arg << " ";
+		Output(rest...);
+	}
+	static void Input() { ; }
+
+	template <typename First, typename ... T>
+	static void Input(First& arg, const T&...rest) {
+		cin >> arg;
+		Input(rest...);
+	}
 };
 
 
-
+//SECTION MAIN
 int main(int argc, const char** argv)
 {
-	string opSelection = NULL;
-
+	string opSelection = "\0";
+	string arg = "\0";
 	while (opSelection != "END")
 	{
-		cin >> opSelection;
+		uint16 index = 0;
+		IOS::Input<string&, uint16&>(opSelection, index);
 		string OP = opSelection.substr(0, opSelection.find('-'));
-		char arg = opSelection[4];
+		IOS::Output(OP, 1, index);
 
 
 		if (OP == "END") {
-			return 0;
 		}
 		else if (OP == "SET") {
+			arg = opSelection.substr(opSelection.find('-') + 1, 2);
+			if (arg == "AP") {
 
+			}
 		}
 		else if (OP == "PUT") {
 
