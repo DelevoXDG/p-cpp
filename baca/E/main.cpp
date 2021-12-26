@@ -6,71 +6,83 @@ using std::cin; using std::cout; using std::endl; using std::string;
 typedef unsigned char uint8;
 typedef unsigned short int uint16;
 
-const uint16 MAX_PLACE = 65535;
-const uint8 MAX_SHELF = 128;
-const uint8 MAX_RACK = 128;
-const uint8 MAX_WAREHOUSE = 128;
-const uint8 MAX_STORAGE = 128;
+namespace MAX_CONSTS {
+	const uint16 MAX_PLACE = 65535;
+	const uint8 MAX_SHELF = 128;
+	const uint8 MAX_RACK = 128;
+	const uint8 MAX_WAREHOUSE = 128;
+	const uint8 MAX_STORAGE = 128;
+}
 
+using namespace MAX_CONSTS;
+
+namespace IOS {
+
+	void Write() { std::cout << endl; }
+
+	template<typename FirstT, typename ... ArgsT>
+	void Write(FirstT first, const ArgsT&... args) {
+		std::cout << first << " ";
+		Write(args...);
+	}
+
+	void Read() { ; }
+
+	template <typename FirstT, typename ... ArgsT>
+	void Read(FirstT& first, const ArgsT&...args) {
+		std::cin >> first;
+		Read(args...);
+	}
+
+	void ShowError() {
+		std::cout << "error" << endl;
+	}
+}
+
+//SECTION STORAGE STRUCTS
 struct Place {
 public:
+	// uint16 maxSize = MAX_PLACE;
+	uint16 size;
+	char label = 0;
+	bool isLabeled = false;
 
-	uint16 PlaceSize;
+public:
+	//void Set
+
 
 };
 
 struct Shelf {
 public:
-
-	uint8 ShelfSize;
+	// uint8 maxSize = MAX_SHELF;
+	uint8 size;
 	Place m_place[MAX_PLACE];
 };
 
 struct Rack {
 public:
-
-	uint8 RackSize;
+	// uint8 maxSize = MAX_RACK;
+	uint8 size;
 	Shelf m_shelf[MAX_SHELF];
 
 };
 
 struct Warehouse {
 public:
-
-	uint8 WarehouseSize;
+	// uint8 maxSize = MAX_WAREHOUSE;
+	uint8 size;
 	Rack m_rack[MAX_RACK];
-	Shelf m_handyShelf_warehouse[MAX_PLACE];
+	Shelf m_handyShelf[MAX_PLACE];
 
 };
 
 struct Storage {
 public:
-
-	uint8 storageSize;
-	Rack m_handyRack_storage[MAX_RACK];
-	Shelf m_handyShelf_storage[MAX_SHELF];
-};
-
-//SECTION HELPER FUNCTIONS
-struct IOS {
-public:
-
-	static void Output() {
-		std::cout << std::endl;
-	}
-
-	template<typename First, typename ... T>
-	static void Output(First arg, const T&... rest) {
-		std::cout << arg << " ";
-		Output(rest...);
-	}
-	static void Input() { ; }
-
-	template <typename First, typename ... T>
-	static void Input(First& arg, const T&...rest) {
-		cin >> arg;
-		Input(rest...);
-	}
+	// uint8 maxSize = MAX_STORAGE;
+	uint8 size;
+	Rack m_handyRack[MAX_RACK];
+	Shelf m_handyShelf[MAX_SHELF];
 };
 
 
@@ -82,16 +94,17 @@ int main(int argc, const char** argv)
 	while (opSelection != "END")
 	{
 		uint16 index = 0;
-		IOS::Input<string&, uint16&>(opSelection, index);
+		IOS::Read<string&, uint16&>(opSelection, index);
 		string OP = opSelection.substr(0, opSelection.find('-'));
-		IOS::Output(OP, 1, index);
+		IOS::Write(OP, 1, index);
 
 
-		if (OP == "END") {
+		if (OP == "END") { //Note Exit
+
 		}
 		else if (OP == "SET") {
 			arg = opSelection.substr(opSelection.find('-') + 1, 2);
-			if (arg == "AP") {
+			if (arg == "AP") { //Note SET-AP
 
 			}
 		}
