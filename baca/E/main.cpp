@@ -1,14 +1,16 @@
 // Maksim Zdobnikau
 
 #include <iostream>
+
+
 using std::cin; using std::cout; using std::endl; using std::string;
 
+#define nullptr NULL
 typedef unsigned char uint8;
 typedef unsigned short int uint16;
 
 namespace MAX_CONSTS {
-	const uint16 MAX_GOODS = 65535;
-	const uint8 MAX_UNI = 128;
+	const uint16 MAX_QUANTITY = 65535;
 	const uint8 MAX_PLACE = 128;
 	const uint8 MAX_SHELF = 128;
 	const uint8 MAX_RACK = 128;
@@ -17,21 +19,20 @@ namespace MAX_CONSTS {
 }
 using namespace MAX_CONSTS;
 
-
 namespace IOS {
 
 	void Output() { std::cout << endl; }
 
 	template<typename FirstT, typename ... ArgsT>
-	void Output(FirstT first, const ArgsT&... args) {
-		std::cout << first << " ";
+	void Output(FirstT first, ArgsT&... args) {
+		std::cout << first;
 		Output(args...);
 	}
 
 	void Input() { ; }
 
 	template <typename FirstT, typename ... ArgsT>
-	void Input(FirstT& first, const ArgsT&...args) {
+	void Input(FirstT& first, ArgsT&...args) {
 		std::cin >> first;
 		Input(args...);
 	}
@@ -42,22 +43,18 @@ namespace IOS {
 
 }
 
-namespace HelperFuncs {
-
-}
 
 //SECTION STORAGE STRUCTS
 namespace Storage_Structs {
 
 	struct Place {
-	public:
-		uint16 maxSize = MAX_GOODS;
+
 		uint16 quantity; //Number of goods stored in Place upto 65535
 		uint8 size;
-		uint8 label = 0;
-		bool isLabeled = false;
+		uint8 label : 7;
+		bool isLabeled : 1;
 
-	public:
+
 		Place() : quantity(0), isLabeled(false) {}
 
 		void Clear() {
@@ -65,26 +62,20 @@ namespace Storage_Structs {
 			label = 0;
 			isLabeled = false;
 		}
-		void PrintLabel() {
-			printf("%02d", label);
+		void Put(uint16 add) {
+			quantity = (quantity + add > MAX_QUANTITY) ? MAX_QUANTITY : (quantity + add);
 		}
+
 
 	};
 
 	struct Shelf {
-	public:
-		uint8 maxSize = MAX_PLACE;
+
 		uint8 size; //Number of Places stored in Shelf upto 128
 		Place m_place[MAX_PLACE];
 
-
-	public:
 		Shelf() : size(0) {}
-		void Clear(uint8 a, uint8 b) {
-			for (size_t i = a; i < b; i++) {
-				m_place[i].Clear();
-			}
-		}
+
 
 		void SetSize(uint8 new_size_0) {
 			size_t a = size < new_size_0 ? size : new_size_0;
@@ -100,18 +91,13 @@ namespace Storage_Structs {
 
 
 	struct Rack {
-	public:
-		uint8 maxSize = MAX_SHELF;
+
 		uint8 size; //Number of Shelves stored in Rack upto 128 
 		Shelf m_shelf[MAX_SHELF];
 
-	public:
+
 		Rack() : size(0) {}
-		void Clear(uint8 a, uint8 b) {
-			for (size_t i = a; i < b; i++) {
-				m_shelf[i].Clear(0, 128);
-			}
-		}
+
 		void SetSize(uint8 new_size_0, uint8 new_size_1) {
 			size_t a = size < new_size_0 ? size : new_size_0;
 			size_t b = size > new_size_0 ? size : new_size_0;
@@ -124,14 +110,13 @@ namespace Storage_Structs {
 	};
 
 	struct Warehouse {
-	public:
-		Warehouse() : size(0) {}
-		uint8 maxSize = MAX_RACK;
+
 		uint8 size; //Number of Racks stored in Warehouse upto 128
 		Rack m_rack[MAX_RACK];
 		Shelf m_handyShelf;
 
-	public:
+
+		Warehouse() : size(0) {}
 		void SetSize(uint8 new_size_0, uint8 new_size_1, uint8 new_size_2) {
 			size_t a = size < new_size_0 ? size : new_size_0;
 			size_t b = size > new_size_0 ? size : new_size_0;
@@ -144,13 +129,13 @@ namespace Storage_Structs {
 	};
 
 	struct Storage {
-	public:
-		uint8 maxSize = MAX_WAREHOUSE;
+
 		uint8 size; //Number of Warehouses stored in Storage upto 128
-		Warehouse m_warehouse[MAX_WAREHOUSE];
 		Rack m_handyRack;
 		Shelf m_handyShelf;
-	public:
+		Warehouse m_warehouse[MAX_WAREHOUSE];
+
+		Storage() : size(0) {}
 		void SetSize(uint8 new_size_0, uint8 new_size_1, uint8 new_size_2, uint8 new_size_3) {
 			size_t a = size < new_size_0 ? size : new_size_0;
 			size_t b = size > new_size_0 ? size : new_size_0;
@@ -160,6 +145,8 @@ namespace Storage_Structs {
 			}
 			size = new_size_0;
 		}
+
+
 
 	};
 
@@ -171,10 +158,11 @@ int main(int argc, const char** argv)
 {
 	static Storage storage;
 
-	uint16 w = 0;
-	uint16 r = 0;
-	uint16 s = 0;
-	uint16 p = 0;
+	int w = 0;
+	int r = 0;
+	int s = 0;
+	int p = 0;
+	int a = 0;
 
 	string opSelection = "\0";
 	string arg = "\0";
@@ -194,29 +182,81 @@ int main(int argc, const char** argv)
 
 		}
 		else if (OP == "SET") {
-			arg = opSelection.substr(opSelection.find('-') + 1, 2);
+			arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
 			if (arg == "AP") { //Note SET-AP
-				//IOS::Input(w, r, s, p);
-				if (w > 128 || r > 128 || s > 128 || p > 128) {
+				IOS::Input(w, r, s, p);
+
+				if (w > 128 || r > 128 || s > 128 || p > 128 || w < 0 || r < 0 || s < 0 || p < 0) {
 					IOS::PrintError();
 				}
-				storage.m_warehouse[w].m_rack[r].m_shelf[s].SetSize(p);
+				else storage.m_warehouse[w].m_rack[r].m_shelf[s].SetSize(p);
 			}
 			else if (arg == "AS") { //Note SET-AS
-				//IOS::Input(w, r, s, p);
-				if (w > 128 || r > 128 || s > 128 || p > 128) {
+				IOS::Input(w, r, s, p);
+				if (w > 128 || r > 128 || s > 128 || p > 128 || w < 0 || r < 0 || s < 0 || p < 0) {
 					IOS::PrintError;
 				}
-				storage.m_warehouse[w].m_rack[r].SetSize(s, p);
+				else storage.m_warehouse[w].m_rack[r].SetSize(s, p);
 			}
-			else if (OP == "PUT") {
+			else if (arg == "AR") { //Note SET-AR
+				IOS::Input(w, r, s, p);
+				if (w > 128 || r > 128 || s > 128 || p > 128 || w < 0 || r < 0 || s < 0 || p < 0) {
+					IOS::PrintError;
+				}
+				else storage.m_warehouse[w].SetSize(r, s, p);
+			}
+			else if (arg == "AW") { //Note Set-AW
+				IOS::Input(w, r, s, p);
+				if (w > 128 || r > 128 || s > 128 || p > 128 || w < 0 || r < 0 || s < 0 || p < 0) {
+				}
+				else storage.m_warehouse[w].m_rack[r].SetSize(s, p);
+			}
+			else if (arg == "HW") { //Note SET-HW
+				IOS::Input(w, p);
+				if (w > 128 || r > 128 || s > 128 || p > 128 || w < 0 || r < 0 || s < 0 || p < 0) {
+					IOS::PrintError;
+				}
+				else storage.m_warehouse[w].m_handyShelf.SetSize(p);
+			}
+			else if (arg == "HR") { //Note SET-HR
+				IOS::Input(s, p);
+				if (w > 128 || r > 128 || s > 128 || p > 128 || w < 0 || r < 0 || s < 0 || p < 0) {
+					IOS::PrintError;
+				}
+				else storage.m_handyRack.SetSize(s, p);
+			}
+			else if (arg == "HS") { //Note SET-HS
+				IOS::Input(p);
+				if (w > 128 || r > 128 || s > 128 || p > 128 || w < 0 || r < 0 || s < 0 || p < 0) {
+					IOS::PrintError;
+				}
+				else storage.m_handyShelf.SetSize(p);
+			}
+		}
+		else if (OP == "PUT") {
+			arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
+			if (arg == "W") {
+				IOS::Input(w, r, s, p, a);
+				if (w > 128 || r > 128 || s > 128 || p > 128 || w < 0 || r < 0 || s < 0 || p < 0) {
+					IOS::PrintError();
+				}
+				else storage.m_warehouse[w].m_rack[r].m_shelf[s].m_place[p].Put(a);
 
 			}
-			else if (OP == "FILL") {
+			else if (arg == "H") {
 
 			}
+			else if (arg == "R") {
+
+			}
+			else if (arg == "S") {
+
+			}
+		}
+		else if (OP == "FILL") {
 
 		}
-		return 0;
+
 	}
+	return 0;
 }
