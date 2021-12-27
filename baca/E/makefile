@@ -1,9 +1,7 @@
 CC=g++
-CFLAGS=-std=c++11 -o
+CFLAGS=-std=c++98 -o
 EXE = main
 FILES = main.cpp
-INC = include/
-OUTDIR = build/
 
 all: make run
 

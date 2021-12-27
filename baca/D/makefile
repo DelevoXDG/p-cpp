@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-std=c++17 -o
+CFLAGS=-std=c++11 -o
 EXE = main
 FILES = source.cpp
 INC = include/
