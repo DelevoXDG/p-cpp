@@ -90,12 +90,13 @@ namespace Storage_NS {
 		uint8 Get_Label();
 		bool Is_Labeled();
 		void Clear();
-		void Set_Value(const uint16, const uint8);
-		void Set_Value(const uint16, const PlaceState);
-		void Put(uint16);
-		void Pop(uint16);
+		uint16 Set_Value(const uint16, const uint8);
+		uint16 Set_Value(const uint16, const PlaceState);
+		uint16 Put(uint16);
+		uint16 Pop(uint16);
 		void Move(Place&, uint16);
 		uint16 Get_Num_Goods();
+		void Set_Num_Goods(uint16);
 	};
 	struct Shelf {
 		uint8 _size; //Number of Places stored in Shelf [0...128]
@@ -109,9 +110,10 @@ namespace Storage_NS {
 			// }
 		}
 		bool invariant();
-		void Set_Size(const uint8);
+		uint64 Set_Size(const uint8);
 		uint64 Get_Num_Goods();
 		Place& Get_Place(const uint8 p);
+		void Set_Num_Goods(uint64);
 	};
 	struct Rack {
 
@@ -120,8 +122,9 @@ namespace Storage_NS {
 		uint64 _num_goods; // INV
 		Rack() : _size(0) {	}
 		bool invariant();
-		void Set_Size(const uint8, const uint8);
+		uint64 Set_Size(const uint8, const uint8);
 		uint64 Get_Num_Goods();
+		void Set_Num_Goods(uint64);
 	};
 	struct Warehouse {
 
@@ -131,7 +134,9 @@ namespace Storage_NS {
 		uint64 _num_goods; // INV
 		bool invariant();
 		Warehouse() : _size(0) {}
-		void Set_Size(const uint8, const uint8, const uint8);
+		uint64 Get_Num_Goods();
+		uint64 Set_Size(const uint8, const uint8, const uint8);
+		void Set_Num_Goods(uint64);
 	};
 	struct Storage {
 
@@ -142,11 +147,13 @@ namespace Storage_NS {
 		uint64 _num_goods; // INV
 		Storage() : _size(0) {}
 		bool invariant();
-		void Set_Size(const uint8, const uint8, const uint8, const uint8);
+		uint64 Set_Size(const uint8, const uint8, const uint8, const uint8);
+		uint64 Get_Num_Goods();
 		void Fill(const uint8, const uint8, const uint8, const uint8, uint8);
 		bool ReadAndCheck(int* const, int* const, int* const, int* const,
 			int* const,
 			int* const, int* const, int* const, int* const);
+		void Set_Num_Goods(uint64);
 	};
 
 	void Place::Set_Label(uint8 label) {
@@ -166,31 +173,34 @@ namespace Storage_NS {
 	// 	label = 0;
 	// 	isLabeled = false;
 	// }
-	void Place::Set_Value(const uint16 ngoods, const uint8 nlabel) {
-		_num_goods = ngoods;
+	uint16 Place::Set_Value(const uint16 num_goods, const uint8 nlabel) {
+		uint16 delta = num_goods - _num_goods;
+		_num_goods = num_goods;
 		_isLabeled = true;
 		_label = nlabel;
 
-		goods_sum += (ngoods - _num_goods);
+		return delta; //Delta
 	}
-	void Place::Set_Value(const uint16 ngoods, PlaceState state) {
-		if (state == empty) {
-			_num_goods = ngoods;
-			_isLabeled = false;
-		}
+	uint16 Place::Set_Value(const uint16 num_goods, PlaceState state) {
+		assert(state == empty);
+		uint16 delta = num_goods - _num_goods;
+		_num_goods = num_goods;
+		_isLabeled = false;
 
-		goods_sum += (ngoods - _num_goods);
+		return delta; //Delta
 	}
-	void Place::Put(uint16 add) {
+	uint16 Place::Put(uint16 add) {
 		add = (_num_goods + add <= MAX_GOODS) ? add : MAX_GOODS - _num_goods;
 		_num_goods += add;
 		// parent[id].sum += num_goods;
-		goods_sum += _num_goods;
+
+		return add; //Delta
 	}
-	void Place::Pop(uint16 sub) {
+	uint16 Place::Pop(uint16 sub) {
 		sub = (_num_goods - sub > 0) ? sub : _num_goods;
 		_num_goods -= sub;
-		goods_sum -= sub;
+
+		return -sub; //Delta
 	}
 	void Place::Move(Place& target, uint16 a) {
 		a = (a < _num_goods) ? a : _num_goods;
@@ -201,6 +211,34 @@ namespace Storage_NS {
 	uint16 Place::Get_Num_Goods() {
 		return _num_goods;
 	}
+	uint64 Shelf::Get_Num_Goods() {
+		return _num_goods;
+	}
+	uint64 Rack::Get_Num_Goods() {
+		return _num_goods;
+	}
+	uint64 Warehouse::Get_Num_Goods() {
+		return _num_goods;
+	}
+	uint64 Storage::Get_Num_Goods() {
+		return _num_goods;
+	}
+	void Place::Set_Num_Goods(uint16 num_goods) {
+		_num_goods
+	}
+	void Shelf::Set_Num_Goods(uint64 num_goods) {
+
+	}
+	void Rack::Set_Num_Goods(uint64 num_goods) {
+
+	}
+	void Warehouse::Set_Num_Goods(uint64 num_goods) {
+
+	}
+	void Storage::Set_Num_Goods(uint64 num_goods) {
+
+	}
+
 
 	bool Place::invariant() {
 		return (_num_goods <= MAX_GOODS)
@@ -223,14 +261,17 @@ namespace Storage_NS {
 	}
 
 
-	void Shelf::Set_Size(const uint8 ns0) { //BaCa won't allow n3w keyword
+	uint64 Shelf::Set_Size(const uint8 ns0) { //BaCa won't allow n3w keyword
 		uint8 a = _size < ns0 ? _size : ns0;
 		uint8 b = _size > ns0 ? _size : ns0;
 
-		for (size_t i = a; i < b; i++) {
-			_place[i].Set_Value(0, empty);
+		uint64 delta = 0;
+		for (int i = a; i < b; i++) {
+			delta += _place[i].Set_Value(0, empty);
 		}
 		_size = ns0;
+		_num_goods += delta;
+		return delta;
 	}
 	uint64 Shelf::Get_Num_Goods() {
 		return _num_goods;
@@ -239,37 +280,42 @@ namespace Storage_NS {
 		return _place[p];
 	}
 
-	void Rack::Set_Size(const uint8 ns0, const uint8 ns1) {
+	uint64 Rack::Set_Size(const uint8 ns0, const uint8 ns1) {
 		uint8 a = _size < ns0 ? _size : ns0;
 		uint8 b = _size > ns0 ? _size : ns0;
-
+		uint64 delta = 0;
 		for (int i = a; i < b; i++) {
-			_shelf[i].Set_Size(ns1);
+			delta += _shelf[i].Set_Size(ns1);
 		}
 		_size = ns0;
-	}
-	uint64 Rack::Get_Num_Goods() {
-		return _num_goods;
+		_num_goods += delta;
+		return delta;
 	}
 
-	void Warehouse::Set_Size(const uint8 ns0, const uint8 ns1, const uint8 ns2) {
+	uint64 Warehouse::Set_Size(const uint8 ns0, const uint8 ns1, const uint8 ns2) {
 		uint8 a = _size < ns0 ? _size : ns0;
 		uint8 b = _size > ns0 ? _size : ns0;
-
+		uint64 delta = 0;
 		for (int i = a; i < b; i++) {
-			_rack[i].Set_Size(ns1, ns2);
+			delta += _rack[i].Set_Size(ns1, ns2);
 		}
 		_size = ns0;
+		_num_goods += delta;
+		return delta;
 	}
-	void Storage::Set_Size(const uint8 ns0, const uint8 ns1, const uint8 ns2, const uint8 ns3) {
+	uint64 Storage::Set_Size(const uint8 ns0, const uint8 ns1, const uint8 ns2, const uint8 ns3) {
 		uint8 a = _size < ns0 ? _size : ns0;
 		uint8 b = _size > ns0 ? _size : ns0;
-
+		uint64 delta = 0;
 		for (int i = a; i < b; i++) {
-			_warehouse[i].Set_Size(ns1, ns2, ns3);
+			delta += _warehouse[i].Set_Size(ns1, ns2, ns3);
 		}
 		_size = ns0;
+		_num_goods += delta;
+		return delta;
 	}
+
+
 	bool Storage::ReadAndCheck(int* const w = 0, int* const r = 0, int* const s = 0, int* const p = 0,
 		int* const a = 0,
 		int* const w1 = 0, int* const r1 = 0, int* const s1 = 0, int* const p1 = 0) {
@@ -309,7 +355,7 @@ namespace Storage_NS {
 		//shelf - k
 		//rack - j
 		//place - l
-
+		uint64 delta = 0;
 		_size = w;
 		for (int i = 0; i < w; i++) {
 			_warehouse[i]._size = r;
@@ -317,29 +363,30 @@ namespace Storage_NS {
 				_warehouse[i]._rack[j]._size = s;
 				for (int k = 0; k < s; k++) {
 					_warehouse[i]._rack[j]._shelf[k]._size = p;
+					delta = 0;
 					for (int l = 0; l < p; l++) {
-						_warehouse[i]._rack[j]._shelf[k]._place[l].Set_Value(a, empty);
+						delta += _warehouse[i]._rack[j]._shelf[k]._place[l].Set_Value(a, empty);
 					}
+					_warehouse[i]._rack[j]._shelf[k].Set_Num_Goods(
+						delta + _warehouse[i]._rack[j]._shelf[k].Get_Num_Goods());
+
 				}
 			}
 			_warehouse[i]._handyShelf._size = p;
 			for (int l = 0; l < p; l++) {
-				_warehouse[i]._handyShelf._place[l]._isLabeled = false;
-				_warehouse[i]._handyShelf._place[l]._num_goods = a;
+				delta += _warehouse[i]._handyShelf._place[l].Set_Value(a, empty);
 			}
 		}
 		_handyRack._size = s;
 		for (int k = 0; k < s; k++) {
 			_handyRack._shelf[k]._size = p;
 			for (int l = 0; l < p; l++) {
-				_handyRack._shelf[k]._place[l]._isLabeled = false;
-				_handyRack._shelf[k]._place[l]._num_goods = a;
+				delta += _handyRack._shelf[k]._place[l].Set_Value(a, empty);
 			}
 		}
 		_handyShelf._size = p;
 		for (int l = 0; l < _handyShelf._size; l++) {
-			_handyShelf._place[l]._isLabeled = false;
-			_handyShelf._place[l]._num_goods = a;
+			delta += _handyShelf._place[l].Set_Value(a, empty);
 		}
 	}
 
