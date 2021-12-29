@@ -117,7 +117,7 @@ namespace Storage_NS {
 		bool invariant();
 		void Set_Size_Sub(const uint8);
 		uint8 Get_Size();
-		uint8 Set_Size(const uint8);
+		void Set_Size(const uint8);
 		uint64 Get_Num_Goods();
 		Place& Get_Place(const uint8 p);
 		void Set_Num_Goods(uint64);
@@ -132,7 +132,7 @@ namespace Storage_NS {
 		bool invariant();
 		void Set_Size_Sub(const uint8, const uint8);
 		uint8 Get_Size();
-		uint8 Set_Size(const uint8);
+		void Set_Size(const uint8);
 		uint64 Get_Num_Goods();
 		void Set_Num_Goods(uint64);
 		uint64 Count_Sum();
@@ -148,7 +148,7 @@ namespace Storage_NS {
 		uint64 Get_Num_Goods();
 		void Set_Size_Sub(const uint8, const uint8, const uint8);
 		uint8 Get_Size();
-		uint8 Set_Size(const uint8);
+		void Set_Size(const uint8);
 		void Set_Num_Goods(uint64);
 		uint64 Count_Sum();
 	};
@@ -163,7 +163,7 @@ namespace Storage_NS {
 		bool invariant();
 		void Set_Size_Sub(const uint8, const uint8, const uint8, const uint8);
 		uint8 Get_Size();
-		uint8 Set_Size(const uint8);
+		void Set_Size(const uint8);
 		uint64 Get_Num_Goods();
 		void Fill(const uint8, const uint8, const uint8, const uint8, uint8);
 		bool ReadAndCheck(int* const, int* const, int* const, int* const,
@@ -173,7 +173,7 @@ namespace Storage_NS {
 		uint64 Count_Sum();
 
 		//[ ] OPTIMIZE ???
-		bool Check_Goods(const int a);
+
 		bool Check_Warehouse(const int w);
 		bool Check_Rack(const int w, const int r);
 		bool Check_Shelf(const int w, const int r, const int s);
@@ -279,16 +279,16 @@ namespace Storage_NS {
 	uint8 Storage::Get_Size() {
 		return _size;
 	}
-	uint8 Shelf::Set_Size(const uint8 size) {
+	void Shelf::Set_Size(const uint8 size) {
 		_size = size;
 	}
-	uint8 Rack::Set_Size(const uint8 size) {
+	void Rack::Set_Size(const uint8 size) {
 		_size = size;
 	}
-	uint8 Warehouse::Set_Size(const uint8 size) {
+	void Warehouse::Set_Size(const uint8 size) {
 		_size = size;
 	}
-	uint8 Storage::Set_Size(const uint8 size) {
+	void Storage::Set_Size(const uint8 size) {
 		_size = size;
 	}
 
@@ -364,28 +364,18 @@ namespace Storage_NS {
 			// delta +=
 			_warehouse[i].Set_Size_Sub(ns1, ns2, ns3);
 		}
+		//[ ] FIX 
 		_size = ns0;
 		// _num_goods += delta;
 		// return delta;
 	}
-	bool Storage::Check_Goods(const int a) {
-		// if (a < 0 || a > MAX_GOODS) {
-		// 	IOS::PrintError();
-		// 	return false;
-		// }
-		// return true;
-		return (a > 0 && a < MAX_GOODS);
-	}
+
 	bool Storage::Check_Warehouse(const int w) {
-		// if (w >= this->Get_Size()) {
-		// 	IOS::PrintError();
-		// 	return false;
-		// }
-		// return true;
-		return (w <= this->Get_Size());
+
+		return (w < this->Get_Size());
 	}
 	bool Storage::Check_Rack(const int w, const int r) {
-		// if (!Check_Warehouses) return false;
+
 		return (this->Check_Warehouse(w)
 			&& r < _warehouse[w].Get_Size());
 	}
@@ -443,7 +433,7 @@ namespace Storage_NS {
 		errorCount += a && (*a > MAX_GOODS || *a < 0);
 
 		if (errorCount) {
-			// IOS::PrintError();
+			//IOS::PrintError();
 			return false;
 		}
 		//if (errorCount)
@@ -576,121 +566,160 @@ int main(int argc, const char** argv)
 		else if (OP == "SET") {
 			arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
 			if (arg == "AP") { //Note SET-AP
-				if (storage.ReadAndCheck(&w, &r, &s, &p)) {
+				if (storage.ReadAndCheck(&w, &r, &s, &p)
+					&& storage.Check_Shelf(w, r, s)) {
 					storage._warehouse[w]._rack[r]._shelf[s].Set_Size_Sub(p);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "AS") { //Note SET-AS
-				if (storage.ReadAndCheck(&w, &r, &s, &p)) {
+				if (storage.ReadAndCheck(&w, &r, &s, &p)
+					&& storage.Check_Rack(w, r)) {
 					storage._warehouse[w]._rack[r].Set_Size_Sub(s, p);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "AR") { //Note SET-AR
-				if (storage.ReadAndCheck(&w, &r, &s, &p)) {
+				if (storage.ReadAndCheck(&w, &r, &s, &p)
+					&& storage.Check_Warehouse(w)) {
 					storage._warehouse[w].Set_Size_Sub(r, s, p);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "AW") { //Note Set-AW
 				if (storage.ReadAndCheck(&w, &r, &s, &p)) {
-					// storage._warehouse[w]._rack[r].Set_Size_Sub(s, p);
 					storage.Set_Size_Sub(w, r, s, p);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "HW") { //Note SET-HW
-				if (storage.ReadAndCheck(&w, 0, 0, &p)) {
+				if (storage.ReadAndCheck(&w, 0, 0, &p)
+					&& storage.Check_Warehouse(w)) {
 					storage._warehouse[w]._handyShelf.Set_Size_Sub(p);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "HR") { //Note SET-HR
 				if (storage.ReadAndCheck(0, 0, &s, &p)) {
 
 					storage._handyRack.Set_Size_Sub(s, p);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "HS") { //Note SET-HS
 				if (storage.ReadAndCheck(0, 0, 0, &p)) {
 					storage._handyShelf.Set_Size_Sub(p);
 				}
+				else IOS::PrintError();
 			}
 		}
 		else if (OP == "PUT") {
 			arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
 			if (arg == "W") { //Note PUT-W
-				if (storage.ReadAndCheck(&w, &r, &s, &p, &a)) {
+				if (storage.ReadAndCheck(&w, &r, &s, &p, &a)
+					&& storage.Check_Place(w, r, s, p)) {
 					storage._warehouse[w]._rack[r]._shelf[s]._place[p].Put(a);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "H") { //Note PUT-H
-				if (storage.ReadAndCheck(&w, &p, 0, 0, &a)) {
+				if (storage.ReadAndCheck(&w, &p, 0, 0, &a)
+					&& storage.Check_Warehouse_Handy_Shelf(w, p)) {
 					storage._warehouse[w]._handyShelf._place[p].Put(a);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "R") { //Note PUT-R
-				if (storage.ReadAndCheck(0, 0, &s, &p, &a)) {
+				if (storage.ReadAndCheck(0, 0, &s, &p, &a)
+					&& storage.Check_Handy_Rack_Shelf(s, p)) {
 					storage._handyRack._shelf[s]._place[p].Put(a);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "S") { //Note PUT-S
-				if (storage.ReadAndCheck(0, 0, 0, &p, &a)) {
+				if (storage.ReadAndCheck(0, 0, 0, &p, &a)
+					&& storage.Check_Handy_Shelf(p)) {
 					storage._handyShelf._place[p].Put(a);
 				}
+				else IOS::PrintError();
 			}
 		}
 		else if (OP == "FILL") { //Note FILL
 			if (storage.ReadAndCheck(&w, &r, &s, &p, &a)) {
 				storage.Fill(w, r, s, p, a);
 			}
+			else IOS::PrintError();
 		}
 		else if (OP == "POP") {
 
 			arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
-			if (arg == "W") { //Note POP-W
-				if (storage.ReadAndCheck(&w, &r, &s, &p, &a)) {
+			if (arg == "W") { //Note PUT-W
+				if (storage.ReadAndCheck(&w, &r, &s, &p, &a)
+					&& storage.Check_Place(w, r, s, p)) {
 					storage._warehouse[w]._rack[r]._shelf[s]._place[p].Pop(a);
 				}
+				else IOS::PrintError();
 			}
-			else if (arg == "H") { //Note POP-H
-				if (storage.ReadAndCheck(&w, &p, 0, 0, &a)) {
+			else if (arg == "H") { //Note PUT-H
+				if (storage.ReadAndCheck(&w, &p, 0, 0, &a)
+					&& storage.Check_Warehouse_Handy_Shelf(w, p)) {
 					storage._warehouse[w]._handyShelf._place[p].Pop(a);
 				}
+				else IOS::PrintError();
 			}
-			else if (arg == "R") { //Note POP-R
-				if (storage.ReadAndCheck(0, 0, &s, &p, &a)) {
+			else if (arg == "R") { //Note PUT-R
+				if (storage.ReadAndCheck(0, 0, &s, &p, &a)
+					&& storage.Check_Handy_Rack_Shelf(s, p)) {
 					storage._handyRack._shelf[s]._place[p].Pop(a);
 				}
+				else IOS::PrintError();
 			}
-			else if (arg == "S") { //Note POP-S
-				if (storage.ReadAndCheck(0, 0, 0, &p, &a)) {
+			else if (arg == "S") { //Note PUT-S
+				if (storage.ReadAndCheck(0, 0, 0, &p, &a)
+					&& storage.Check_Handy_Shelf(p)) {
 					storage._handyShelf._place[p].Pop(a);
 				}
+				else IOS::PrintError();
 			}
 		}
 		else if (OP == "MOV") {
 
 			arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
 			if (arg == "W") { //Note MOV-W
-				if (storage.ReadAndCheck(&w, &r, &s, 0, &a, &w1, &r1, &s1, &p1)) {
+				if (storage.ReadAndCheck(&w, &r, &s, 0, &a, &w1, &r1, &s1, &p1)
+					&& storage.Check_Place(w, r, s, p1)
+					&& storage.Check_Place(w1, r1, s1, p1)) {
 					storage._warehouse[w]._rack[r]._shelf[s]._place[p1].Move(
 						storage._warehouse[w1]._rack[r1]._shelf[s1]._place[p1], a);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "H") { //Note MOV-H
-				if (storage.ReadAndCheck(&w, &r, &s, &p, &a)) {
+				if (storage.ReadAndCheck(&w, &r, &s, &p, &a)
+					&& storage.Check_Place(w, r, s, p)
+					&& storage.Check_Warehouse_Handy_Shelf(w, p)) {
 					storage._warehouse[w]._rack[r]._shelf[s]._place[p].Move(
 						storage._warehouse[w1]._handyShelf._place[p], a);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "R") { //Note MOV-R
-				if (storage.ReadAndCheck(&w, &r, &s, 0, &a, 0, 0, &s1, &p1)) {
+				if (storage.ReadAndCheck(&w, &r, &s, 0, &a, 0, 0, &s1, &p1)
+					&& storage.Check_Place(w, r, s, p1)
+					&& storage.Check_Handy_Rack_Shelf(s1, p1)) {
 					storage._warehouse[w]._rack[r]._shelf[s]._place[p1].Move(
 						storage._handyRack._shelf[s1]._place[p1], a);
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "S") {  //Note MOV-S
-				if (storage.ReadAndCheck(0, 0, &s, &p, &a)) {
+				if (storage.ReadAndCheck(0, 0, &s, &p, &a)
+					&& storage.Check_Handy_Rack_Shelf(s, p)
+					&& storage.Check_Handy_Shelf(p)) {
 					storage._handyRack._shelf[s]._place[p].Move(
 						storage._handyShelf._place[p], a);
 				}
+				else IOS::PrintError();
 			}
 		}
 		else if (OP == "GET")
@@ -699,34 +728,40 @@ int main(int argc, const char** argv)
 			if (arg == "E") { //Note GET-E
 				cout << storage.Count_Sum() << endl;
 			}
+
 			else if (arg == "W") { //Note GET-W
-				if (storage.ReadAndCheck(&w)) {
+				if (storage.ReadAndCheck(&w)
+					&& storage.Check_Warehouse(w)) {
 					cout << storage._warehouse[w].Count_Sum() << endl;
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "RW") { //Note GET-RW
-				if (storage.ReadAndCheck(&w, &r)) {
-
+				if (storage.ReadAndCheck(&w, &r)
+					&& storage.Check_Rack(w, r)) {
 					cout << storage._warehouse[w]._rack[r]._shelf[s].Count_Sum() << endl;
 				}
+				else IOS::PrintError();
 			}
 			else if (arg == "RH") { //Note GET-RH
 				cout << storage._handyRack.Count_Sum() << endl;
 			}
 			else if (arg == "SW") { //Note GET-SW
-				if (storage.ReadAndCheck(&w, &r, &s)) {
+				if (storage.ReadAndCheck(&w, &r, &s)
+					&& storage.Check_Shelf(w, r, s)) {
 
 					cout << storage._warehouse[w]._rack[r]._shelf[s].Count_Sum() << endl;
 				}
 			}
 			else if (arg == "SH") { //Note GET-SH
-				if (storage.ReadAndCheck(&w)) {
+				if (storage.ReadAndCheck(&w)
+					&& storage.Check_Warehouse(w)) {
 					cout << storage._warehouse[w]._handyShelf.Count_Sum() << endl;
 				}
 			}
 			else if (arg == "SR") {
-				if (storage.ReadAndCheck(0, 0, &s)) {
-
+				if (storage.ReadAndCheck(0, 0, &s)
+					&& storage.Check_Handy_Rack(s)) {
 					cout << storage._handyRack._shelf[s].Count_Sum() << endl;
 				}
 			}
