@@ -4,33 +4,30 @@
 
 using std::cin; using std::cout; using std::endl; using std::string;
 
-#define nullptr NULL
 typedef unsigned char uint8;
 typedef unsigned short int uint16;
 typedef unsigned long long uint64;
-
-//SECTION TODO LIST
 
 enum Instruction {
 	//lowercase - location
 	//UPPERCASE - n3w value 
 
 	SET_AP, //w r s P
-	SET_AS, //w r S P //[ ]TODO
-	SET_AR, //w R S P //[ ]TODO
-	SET_AW,	//W R S P //[ ]TODO
+	SET_AS, //w r S P 
+	SET_AR, //w R S P 
+	SET_AW,	//W R S P 
 	SET_HW, //w 0 0 P
-	SET_HR, //S 0 0 P //[ ]TODO
+	SET_HR, //S 0 0 P 
 	SET_HS,	//0 0 0 P
 
-	FILL, //W R S P A //[X] TODO
+	FILL, //W R S P A 
 
-	PUT_W, //w r s p A //[X] TODO
+	PUT_W, //w r s p A 
 	PUT_H, //w 0 0 p A
 	PUT_R, //s 0 0 p A 
 	PUT_S, //0 0 0 p A
 
-	POP_W, //w r s p A //[x] TODO
+	POP_W, //w r s p A 
 	POP_H, //w p A
 	POP_R, //s p A 
 	POP_S, //p A
@@ -49,7 +46,6 @@ enum Instruction {
 	GET_SR, //s
 	GET_S, //
 
-	//[ ]TODO
 	SET_LW, //w r s p dd 
 	SET_LH, //w p dd
 	SET_LR, //s p dd 
@@ -64,7 +60,7 @@ enum Instruction {
 	undefined = 404
 };
 Instruction opParse(string opSelection) {
-	// string arg = "\0";
+
 	bool hasArg = opSelection.find('-') != std::string::npos;
 	string OP = hasArg ? opSelection.substr(0, opSelection.find('-')) : opSelection;
 	string arg = hasArg ? opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length()) : "\0";
@@ -78,31 +74,31 @@ Instruction opParse(string opSelection) {
 		else if (arg == "HW") return SET_HW; //Note SET-HW
 		else if (arg == "HR") return SET_HR; //Note SET-HR
 		else if (arg == "HS") return SET_HS; //Note SET-HS
+		else if (arg == "LW") return SET_LW; //Note SET-LW
+		else if (arg == "LH") return SET_LH; //Note SET-LH
+		else if (arg == "LR") return SET_LR; //Note SET-LR
+		else if (arg == "LS") return SET_LS; //Note SET-LS
 	}
 	else if (OP == "FILL") return FILL; //Note FILL
 	else if (OP == "PUT") {
-		// arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
 		if (arg == "W") return PUT_W; //Note PUT-W
 		else if (arg == "H") return PUT_H;  //Note PUT-H
 		else if (arg == "R") return PUT_R; //Note PUT-R
 		else if (arg == "S") return PUT_S; //Note PUT-S
 	}
 	else if (OP == "POP") {
-		// arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
 		if (arg == "W") return POP_W; //Note POP-W
 		else if (arg == "H") return POP_H;  //Note POP-H
 		else if (arg == "R") return POP_R; //Note POP-R
 		else if (arg == "S") return POP_S; //Note POP-S
 	}
 	else if (OP == "MOV") {
-		// arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
 		if (arg == "W") return MOV_W; //Note MOV-W
 		else if (arg == "H") return MOV_H;  //Note MOV-H
 		else if (arg == "R") return MOV_R; //Note MOV-R
 		else if (arg == "S") return MOV_S; //Note MOV-S
 	}
 	else if (OP == "GET") {
-		// arg = opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length());
 		if (arg == "E") return GET_E; //Note GET-E
 		else if (arg == "W") return GET_W; //Note GET-W
 		else if (arg == "RW") return GET_RW; //Note GET-RW
@@ -111,34 +107,23 @@ Instruction opParse(string opSelection) {
 		else if (arg == "SH") return GET_SH; //Note GET-SH
 		else if (arg == "SR") return GET_SR; //Note GET-SR
 		else if (arg == "S") return GET_S; //Note GET-S
+		else if (arg == "LW") return GET_LW; //Note GET-LW
+		else if (arg == "LH") return GET_LH; //Note GET-LH
+		else if (arg == "LR") return GET_LR; //Note GET-LR
+		else if (arg == "LS") return GET_LS; //Note GET-LS
 	}
 	return undefined;
 }
-
-namespace IOS {
-	void Output() { std::cout << endl; }
-
-	template<typename FirstT, typename ... ArgsT>
-	void Output(FirstT first, ArgsT&... args) {
-		std::cout << first;
-		Output(args...);
-	}
-
-	void Input() { ; }
-
-	template <typename FirstT, typename ... ArgsT>
-	void Input(FirstT& first, ArgsT&...args) {
-		std::cin >> first;
-		Input(args...);
-	}
-
-	void PrintError() {
-		std::cout << "error" << endl;
-	}
-}
-
 //SECTION STORAGE STRUCTS
 namespace Storage_NS {
+	// namespace IOS {
+	// 	void PrintError() {
+	// 		std::cout << "error" << endl;
+	// 	}
+	// 	void PrintDD(char** const dd) {
+	// 		std::cout << dd[0] << dd[1] << endl;
+	// 	}
+	// }
 	namespace Storage_Params {
 		const uint16 MAX_GOODS = 65535;
 		const uint8 MAX_PLACE = 128;
@@ -152,18 +137,16 @@ namespace Storage_NS {
 	using namespace Storage_Params;
 	uint64 errorCount = 0;
 
-	void Add_Storage_Sum(uint64 delta) {
-		Storage_Sum += delta;
-	}
 	struct Place;
 	struct Shelf;
 	struct Rack;
 	struct Warehouse;
 	struct Storage;
 
-	enum LabelState : bool {
-		empty = 0, //Used to set empty label
-		nonempty
+	enum PlaceArgs  /*: uint8  * scoped enums only available with '-std=c++11' or '-std=gnu++11'/ */ {
+		LabelEmpty = 10, //Used to set empty label
+		LabelOld = 11,
+		ValueClear = 20, //Old value is cleared, used for FILL
 	};
 
 	struct Place {
@@ -171,10 +154,12 @@ namespace Storage_NS {
 		uint16 _num_goods; //Number of goods stored in Place [0...65535]
 		char _label[2];    // [0..9][0...9]
 
-
 	public:
-		Place() : _num_goods(0), _label{ '\0','\0' } {}
-
+		Place() : _num_goods(0)/*, _label{ '\0','\0' }*/ {
+			//warning: extended initializer lists only available with '-std=c++11'  or '-std=gnu++11'
+			_label[0] = '\0';
+			_label[1] = '\0';
+		}
 		//Note Getters 
 		char* Get_Label();
 		uint16 Get_Num_Goods();
@@ -183,12 +168,13 @@ namespace Storage_NS {
 		//Note Setters
 		void Set_Label(char[2]);
 		void Set_Value(const uint16, const char[2]);
-		void Set_Value(const uint16, const LabelState);
+		void Set_Value(const uint16, const PlaceArgs);
+		void Set_Value(const uint16, const PlaceArgs, const PlaceArgs);
 		void Set_Num_Goods(const uint16);
 
 		//Note Methods
-		void Put(int);
-		void Pop(int);
+		void Put(uint16);
+		void Pop(uint16);
 		void Move(Place&, uint16);
 
 	};
@@ -196,23 +182,20 @@ namespace Storage_NS {
 	private:
 		uint8 _size; //Number of Places stored in Shelf [0...128]
 	public:
-		Place 	_place[MAX_PLACE];
+		Place _place[MAX_PLACE];
 
 		Shelf() : _size(0) {}
 
 		//Note Getters 
 		uint64 Get_Num_Goods();
-		Place& Get_Place(const uint8 p);
 
 		//Note Setters 
 		void Set_All_Sizes(const uint8);
 		uint8 Get_Size();
 		void Set_Size(const uint8);
 
-
 		//Note Methods
 		uint64 Count_Sum();
-
 	};
 	struct Rack {
 	private:
@@ -250,10 +233,12 @@ namespace Storage_NS {
 		//Note Methods
 		uint64 Count_Sum();
 	};
-	struct Storage {
+	struct
+		Storage {
 	private:
 		uint8 _size; //Number of Warehouses stored in Storage [0...128]
 	public:
+
 		Rack _handyRack;
 		Shelf _handyShelf;
 		Warehouse _warehouse[MAX_WAREHOUSE];
@@ -261,21 +246,23 @@ namespace Storage_NS {
 		Storage() : _size(0) {}
 		//Note Getters
 		uint8 Get_Size();
-		uint64 Get_Num_Goods();
+		static uint64 Get_Sum_Goods();
 
 		//Note Setters
 		void Set_All_Sizes(const uint8, const uint8, const uint8, const uint8);
 		void Set_Size(const uint8);
+		static void Set_Sum_Goods(const uint64);
 
 		//Note Methods
 		void Fill(const uint8, const uint8, const uint8, const uint8, uint16);
 		uint64 Count_Sum();
+		static void Add_Num_Goods(uint64);
 
 		//Note ReadInputs
 		bool ReadAndCheck(int* const, int* const, int* const, int* const,
 			int* const,
 			int* const, int* const, int* const, int* const,
-			int** const);
+			char* const);
 		bool Check_Warehouse(const int w);
 		bool Check_Rack(const int w, const int r);
 		bool Check_Shelf(const int w, const int r, const int s);
@@ -285,7 +272,6 @@ namespace Storage_NS {
 		bool Check_Handy_Shelf(const int p);
 		bool Check_Warehouse_Handy_Shelf(const int w, const int p);
 	};
-
 
 	void Place::Set_Label(char label[2]) {
 		_label[0] = label[0];
@@ -298,23 +284,35 @@ namespace Storage_NS {
 		return !(_label[0] == '\0' && _label[1] == '\0');
 	}
 	void Place::Set_Value(const uint16 num_goods, const char label[2]) {
+		Storage::Add_Num_Goods(num_goods - _num_goods);
 		_num_goods = num_goods;
 		_label[0] = label[0];
 		_label[1] = label[1];
 	}
-	void Place::Set_Value(const uint16 num_goods, const LabelState state) {
+	void Place::Set_Value(const uint16 num_goods, const PlaceArgs labelState) {
+		Storage::Add_Num_Goods(num_goods - _num_goods);
 		_num_goods = num_goods;
-		if (state == nonempty) return;
+		if (labelState == LabelOld) return;
 		_label[0] = '\0';
 		_label[1] = '\0';
 	}
-	void Place::Put(int add) {
+	void Place::Set_Value(const uint16 num_goods, const PlaceArgs labelState, const PlaceArgs changeState) {
+		Storage::Add_Num_Goods(num_goods);
+		_num_goods = num_goods;
+		if (labelState == LabelOld) return;
+		_label[0] = '\0';
+		_label[1] = '\0';
+	}
+
+	void Place::Put(uint16 add) {
 		add = (_num_goods + add <= MAX_GOODS) ? add : MAX_GOODS - _num_goods;
 		_num_goods += add;
+		Storage::Add_Num_Goods(add);
 	}
-	void Place::Pop(int sub) {
+	void Place::Pop(uint16 sub) {
 		sub = (_num_goods - sub > 0) ? sub : _num_goods;
 		_num_goods -= sub;
+		Storage::Add_Num_Goods(-sub);
 	}
 	void Place::Move(Place& target, uint16 a) {
 		a = (a < _num_goods) ? a : _num_goods;
@@ -328,7 +326,15 @@ namespace Storage_NS {
 	void Place::Set_Num_Goods(const uint16 num_goods) {
 		_num_goods = num_goods;
 	}
-
+	uint64 Storage::Get_Sum_Goods() {
+		return Storage_Sum;
+	}
+	void Storage::Set_Sum_Goods(const uint64 num_goods) {
+		Storage_Sum = num_goods;
+	}
+	void Storage::Add_Num_Goods(uint64 delta) {
+		Storage_Sum += delta;
+	}
 	uint8 Shelf::Get_Size() {
 		return _size;
 	}
@@ -353,40 +359,38 @@ namespace Storage_NS {
 	void Storage::Set_Size(const uint8 size) {
 		_size = size;
 	}
-
-
 	void Shelf::Set_All_Sizes(const uint8 size0) {
 		for (int i = _size; i < size0; i++) {
-			_place[i].Set_Value(0, empty);
+			_place[i].Set_Value(0, LabelEmpty);
 		}
-		for (int i = _size; i-- > size0;) {
-			_place[i].Set_Value(0, empty);
+		for (int i = _size; i-- > size0; ) {
+			_place[i].Set_Value(0, LabelEmpty);
 		}
 		_size = size0;
 	}
 	void Rack::Set_All_Sizes(const uint8 size0, const uint8 size1) {
-		for (int i = _size; i < size0; i++) {
+		for (int i = 0; i < size0; i++) {
 			_shelf[i].Set_All_Sizes(size1);
 		}
-		for (int i = _size; i-- > size0;) {
+		for (int i = _size; i-- > size0; ) {
 			_shelf[i].Set_All_Sizes(0);
 		}
 		_size = size0;
 	}
 	void Warehouse::Set_All_Sizes(const uint8 size0, const uint8 size1, const uint8 size2) {
-		for (int i = _size; i < size0; i++) {
+		for (int i = 0; i < size0; i++) {
 			_rack[i].Set_All_Sizes(size1, size2);
 		}
-		for (int i = size0; _size < size0; i++) {
+		for (int i = _size; i-- > size0; ) {
 			_rack[i].Set_All_Sizes(0, 0);
 		}
 		_size = size0;
 	}
 	void Storage::Set_All_Sizes(const uint8 size0, const uint8 size1, const uint8 size2, const uint8 size3) {
-		for (int i = _size; i < size0; i++) {
+		for (int i = 0; i < size0; i++) {
 			_warehouse[i].Set_All_Sizes(size1, size2, size3);
 		}
-		for (int i = _size; i-- > size0;) {
+		for (int i = _size; i-- > size0; ) {
 			_warehouse[i].Set_All_Sizes(0, 0, 0);
 		}
 		_size = size0;
@@ -422,6 +426,14 @@ namespace Storage_NS {
 		errorCount += !check;
 		return check;
 	}
+	bool Storage::Check_Warehouse_Handy_Shelf(const int w, const int p) {
+		bool check = (
+			this->Check_Warehouse(w)
+			&& p < _warehouse[w]._handyShelf.Get_Size());
+
+		errorCount += !check;
+		return check;
+	}
 	bool Storage::Check_Handy_Rack(const int s) {
 		bool check = (
 			s < _handyRack.Get_Size());
@@ -444,19 +456,12 @@ namespace Storage_NS {
 		errorCount += !check;
 		return check;
 	}
-	bool Storage::Check_Warehouse_Handy_Shelf(const int w, const int p) {
-		bool check = (
-			this->Check_Warehouse(w)
-			&& p < _warehouse[w]._handyShelf.Get_Size());
 
-		errorCount += !check;
-		return check;
-	}
-
-	bool Storage::ReadAndCheck(int* const w = 0, int* const r = 0, int* const s = 0, int* const p = 0,
+	bool Storage::ReadAndCheck(
+		int* const w = 0, int* const r = 0, int* const s = 0, int* const p = 0,
 		int* const a = 0,
 		int* const w1 = 0, int* const r1 = 0, int* const s1 = 0, int* const p1 = 0,
-		int** const dd = 0) {
+		char* const dd = 0) {
 
 		if (w) cin >> *w;
 		if (r) cin >> *r;
@@ -470,8 +475,8 @@ namespace Storage_NS {
 		if (dd) {
 			string dd_str;
 			cin >> dd_str;
-			*dd[0] = dd_str[0];
-			*dd[1] = dd_str[1];
+			dd[0] = dd_str[0];
+			dd[1] = dd_str[1];
 		}
 		errorCount = 0;
 
@@ -484,12 +489,11 @@ namespace Storage_NS {
 		errorCount += s1 && (*s1 > MAX_SHELF || *s1 < 0);
 		errorCount += p1 && (*p1 > MAX_PLACE || *p1 < 0);
 		errorCount += a && (*a > MAX_GOODS || *a < 0);
-		errorCount += dd && ((*dd[0] < '0' || *dd[1]>'9') && (*dd[0] != '\0' && *dd[0] != '\0'));
+		errorCount += dd && (
+			((dd[0] < '0' || dd[0]>'9') && (dd[0] != '\0' && dd[0] != '\0'))
+			|| ((dd[1] < '0' || dd[1]>'9') && (dd[1] != '\0' && dd[1] != '\0')));
 
-		if (errorCount) {
-			//IOS::PrintError();
-			return false;
-		}
+		if (errorCount) return false;
 
 		return true;
 	}
@@ -499,46 +503,36 @@ namespace Storage_NS {
 		//shelf - k
 		//rack - j
 		//place - l
-
+		this->Set_Sum_Goods(0);
 		this->Set_Size(w);
-		for (int i = 0; i < w; i++)
-		{
+		for (int i = 0; i < w; i++) {
 			_warehouse[i].Set_Size(r);
-			for (int j = 0; j < r; j++)
-			{
+			for (int j = 0; j < r; j++) {
 				_warehouse[i]._rack[j].Set_Size(s);
-				for (int k = 0; k < s; k++)
-				{
+				for (int k = 0; k < s; k++) {
 					_warehouse[i]._rack[j]._shelf[k].Set_Size(p);
-					for (int l = 0; l < p; l++)
-					{
-						_warehouse[i]._rack[j]._shelf[k]._place[l].Set_Value(a, empty);
+					for (int l = 0; l < p; l++) {
+						_warehouse[i]._rack[j]._shelf[k]._place[l].Set_Value(a, LabelEmpty, ValueClear);
 					}
-
 				}
 			}
 			_warehouse[i]._handyShelf.Set_Size(p);
 			for (int l = 0; l < p; l++) {
-				// delta += _warehouse[i]._handyShelf._place[l].Set_Value(a, empty);
-				_warehouse[i]._handyShelf._place[l].Set_Value(a, empty);
+				_warehouse[i]._handyShelf._place[l].Set_Value(a, LabelEmpty, ValueClear);
 			}
 		}
 		_handyRack.Set_Size(s);
 		for (int k = 0; k < s; k++) {
 			_handyRack._shelf[k].Set_Size(p);
 			for (int l = 0; l < p; l++) {
-				// delta += _handyRack._shelf[k]._place[l].Set_Value(a, empty);
-				_handyRack._shelf[k]._place[l].Set_Value(a, empty);
+				_handyRack._shelf[k]._place[l].Set_Value(a, LabelEmpty, ValueClear);
 			}
 		}
 		_handyShelf.Set_Size(p);
 		for (int l = 0; l < p; l++) {
-			//delta += 
-			_handyShelf._place[l].Set_Value(a, empty);
-
+			_handyShelf._place[l].Set_Value(a, LabelEmpty, ValueClear);
 		}
 	}
-
 	uint64 Shelf::Count_Sum() {
 		uint64 count = 0;
 		for (int l = 0; l < this->Get_Size(); l++) {
@@ -561,25 +555,22 @@ namespace Storage_NS {
 		count += _handyShelf.Count_Sum();
 		return count;
 	}
-	uint64 Storage::Count_Sum() {
-		uint64 count = 0;
-		for (int i = 0; i < this->Get_Size();i++) {
-			count += _warehouse[i].Count_Sum();
-		}
-		count += _handyShelf.Count_Sum();
-		count += _handyRack.Count_Sum();
-		return count;
-	}
+	// uint64 Storage::Count_Sum() {
+	// 	uint64 count = 0;
+	// 	for (int i = 0; i < this->Get_Size();i++) {
+	// 		count += _warehouse[i].Count_Sum();
+	// 	}
+	// 	count += _handyShelf.Count_Sum();
+	// 	count += _handyRack.Count_Sum();
+	// 	return count;
+	// }
 }
 using namespace Storage_NS;
 //SECTION MAIN
 
-
-
 int main(int argc, const char** argv)
 {
 	static Storage storage;
-
 	int w = 0;
 	int r = 0;
 	int s = 0;
@@ -592,7 +583,8 @@ int main(int argc, const char** argv)
 	int s1 = 0;
 	int p1 = 0;
 
-	int dd = 0;
+	char dd[2] = { '\0','\0' };
+	char* ddptr = &dd[0];
 
 	string opSelection = "\0";
 
@@ -762,7 +754,7 @@ int main(int argc, const char** argv)
 			break;
 		}
 		case GET_E: {
-			cout << storage.Count_Sum() << endl;
+			cout << storage.Get_Sum_Goods() << endl;
 			break;
 		}
 
@@ -785,7 +777,6 @@ int main(int argc, const char** argv)
 			break;
 		}
 		case GET_SW: {
-
 			if (!storage.ReadAndCheck(&w, &r, &s)) break;
 			if (!storage.Check_Shelf(w, r, s)) break;
 
@@ -793,7 +784,6 @@ int main(int argc, const char** argv)
 			break;
 		}
 		case GET_SH: {
-
 			if (!storage.ReadAndCheck(&w)) break;
 			if (!storage.Check_Warehouse(w)) break;
 
@@ -812,11 +802,71 @@ int main(int argc, const char** argv)
 			cout << storage._handyShelf.Count_Sum() << endl;
 			break;
 		}
+		case SET_LW: {
+			if (!storage.ReadAndCheck(&w, &r, &s, &p, 0, 0, 0, 0, 0, &dd[0])) break;
+			if (!storage.Check_Place(w, r, s, p)) break;
+
+			storage._warehouse[w]._rack[r]._shelf[s]._place[p].Set_Label(dd);
+			break;
+		}
+		case SET_LH: {
+			if (!storage.ReadAndCheck(&w, 0, 0, &p, 0, 0, 0, 0, 0, &dd[0])) break;
+			if (!storage.Check_Warehouse_Handy_Shelf(w, p)) break;
+
+			storage._warehouse[w]._handyShelf._place[p].Set_Label(dd);
+			break;
+		}
+		case SET_LR: {
+			if (!storage.ReadAndCheck(0, 0, &s, &p, 0, 0, 0, 0, 0, &dd[0])) break;
+			if (!storage.Check_Handy_Rack_Shelf(s, p)) break;
+
+			storage._handyRack._shelf[s]._place[p].Set_Label(dd);
+			break;
+		}
+		case SET_LS: {
+			if (!storage.ReadAndCheck(0, 0, 0, &p, 0, 0, 0, 0, 0, &dd[0])) break;
+			if (!storage.Check_Handy_Shelf(p)) break;
+
+			storage._handyShelf._place[p].Set_Label(dd);
+			break;
+		}
+		case GET_LW: {
+			if (!storage.ReadAndCheck(&w, &r, &s, &p, 0, 0, 0, 0, 0, 0)) break;
+			if (!storage.Check_Place(w, r, s, p)) break;
+
+			ddptr = storage._warehouse[w]._rack[r]._shelf[s]._place[p].Get_Label();
+			cout << ddptr[0] << ddptr[1] << endl;
+			break;
+		}
+		case GET_LH: {
+			if (!storage.ReadAndCheck(&w, 0, 0, &p, 0, 0, 0, 0, 0, 0)) break;
+			if (!storage.Check_Warehouse_Handy_Shelf(w, p)) break;
+
+			ddptr = storage._warehouse[w]._handyShelf._place[p].Get_Label();
+			cout << ddptr[0] << ddptr[1] << endl;
+			break;
+		}
+		case GET_LR: {
+			if (!storage.ReadAndCheck(0, 0, &s, &p, 0, 0, 0, 0, 0, 0)) break;
+			if (!storage.Check_Handy_Rack_Shelf(s, p)) break;
+
+			ddptr = storage._handyRack._shelf[s]._place[p].Get_Label();
+			cout << ddptr[0] << ddptr[1] << endl;
+			break;
+		}
+		case GET_LS: {
+			if (!storage.ReadAndCheck(0, 0, 0, &p, 0, 0, 0, 0, 0, 0)) break;
+			if (!storage.Check_Handy_Shelf(p)) break;
+
+			ddptr = storage._handyShelf._place[p].Get_Label();
+			cout << ddptr[0] << ddptr[1] << endl;
+			break;
+		}
 		default:
 			//cout << "unexpected" << endl;
 			break;
 		}
-		if (errorCount) IOS::PrintError();
+		if (errorCount) cout << "error" << endl;
 	}
 
 	return 0;
