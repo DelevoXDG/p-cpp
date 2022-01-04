@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-using std::cin; using std::cout; using std::endl; using std::string;
+using std::cin; using std::cout; using std::endl;
+//Replaced str1ng with char str1ngs just in case
 
 typedef unsigned char uint8;
 typedef unsigned short int uint16;
@@ -59,58 +60,117 @@ enum Instruction {
 	END,
 	undefined = 404
 };
-Instruction opParse(string opSelection) {
 
-	bool hasArg = opSelection.find('-') != std::string::npos;
-	string OP = hasArg ? opSelection.substr(0, opSelection.find('-')) : opSelection;
-	string arg = hasArg ? opSelection.substr(opSelection.find('-') + 1, opSelection.length() - OP.length()) : "\0";
+int cstr_find(char* str, char key) {
 
-	if (OP == "END") {} //Note Exit
-	else if (OP == "SET") {
-		if (arg == "AP") return SET_AP; //Note SET-AP
-		else if (arg == "AS") return SET_AS;  //Note SET-AS
-		else if (arg == "AR") return SET_AR; //Note SET-AR
-		else if (arg == "AW") return SET_AW; //Note Set-AW
-		else if (arg == "HW") return SET_HW; //Note SET-HW
-		else if (arg == "HR") return SET_HR; //Note SET-HR
-		else if (arg == "HS") return SET_HS; //Note SET-HS
-		else if (arg == "LW") return SET_LW; //Note SET-LW
-		else if (arg == "LH") return SET_LH; //Note SET-LH
-		else if (arg == "LR") return SET_LR; //Note SET-LR
-		else if (arg == "LS") return SET_LS; //Note SET-LS
+	for (int i = 0; str[i] != '\0'; i++) {
+		if (str[i] == key) return i; //Return position of Character
 	}
-	else if (OP == "FILL") return FILL; //Note FILL
-	else if (OP == "PUT") {
-		if (arg == "W") return PUT_W; //Note PUT-W
-		else if (arg == "H") return PUT_H;  //Note PUT-H
-		else if (arg == "R") return PUT_R; //Note PUT-R
-		else if (arg == "S") return PUT_S; //Note PUT-S
+	return -1; //Returns -1 if position was not found
+}
+
+void cstr_substr(char* str, char* substr, int begin, int end)
+{
+	int j = 0;
+	for (int i = begin; i < end; i++) {
+		substr[j] = str[i];
+		j++;
 	}
-	else if (OP == "POP") {
-		if (arg == "W") return POP_W; //Note POP-W
-		else if (arg == "H") return POP_H;  //Note POP-H
-		else if (arg == "R") return POP_R; //Note POP-R
-		else if (arg == "S") return POP_S; //Note POP-S
+	substr[j] = '\0';
+	//return substr;
+}
+
+int cstr_length(char* str) {
+	int size = 0;
+	for (int i = 0; str[i] != 0; i++) {
+		size++;
 	}
-	else if (OP == "MOV") {
-		if (arg == "W") return MOV_W; //Note MOV-W
-		else if (arg == "H") return MOV_H;  //Note MOV-H
-		else if (arg == "R") return MOV_R; //Note MOV-R
-		else if (arg == "S") return MOV_S; //Note MOV-S
+	return size;
+}
+int cstr_length(const char* str) {
+	int size = 0;
+	for (int i = 0; str[i] != 0;i++) {
+		size++;
 	}
-	else if (OP == "GET") {
-		if (arg == "E") return GET_E; //Note GET-E
-		else if (arg == "W") return GET_W; //Note GET-W
-		else if (arg == "RW") return GET_RW; //Note GET-RW
-		else if (arg == "RH") return GET_RH; //Note GET-RH
-		else if (arg == "SW") return GET_SW; //Note GET-SW
-		else if (arg == "SH") return GET_SH; //Note GET-SH
-		else if (arg == "SR") return GET_SR; //Note GET-SR
-		else if (arg == "S") return GET_S; //Note GET-S
-		else if (arg == "LW") return GET_LW; //Note GET-LW
-		else if (arg == "LH") return GET_LH; //Note GET-LH
-		else if (arg == "LR") return GET_LR; //Note GET-LR
-		else if (arg == "LS") return GET_LS; //Note GET-LS
+	return size;
+}
+void cstr_copy(char* from, char* to) {
+	int i = 0;
+	for (i = 0; from[i] != 0;i++) {
+		to[i] = from[i];
+	}
+	to[i] = '\0';
+
+}
+bool cstr_compare(char* str1, const char* str2) {
+	if (cstr_length(str1) != cstr_length(str2)) return false;
+	for (int i = 0; str1[i] != 0; i++) {
+		if (str1[i] != str2[i]) return false;
+	}
+
+	return true; //cstrs are equal
+}
+
+Instruction opParse(char opSelection[]) {
+	int dashPos = cstr_find(opSelection, '-');
+	char OP[5] = { 0,0,0,0,0 };
+	char arg[3] = { 0,0,0 };
+	if (dashPos != -1) {
+		int a = dashPos + 1;
+		int b = cstr_length(opSelection) - cstr_length(OP);
+		cstr_substr(opSelection, OP, 0, dashPos);
+		cstr_substr(opSelection, arg, a, b);
+	}
+	else {
+		cstr_copy(opSelection, OP);
+	}
+
+	if (cstr_compare(OP, "END")) return END; //Note Exit
+	else if (cstr_compare(OP, "SET")) {
+		if (cstr_compare(arg, "AP")) return SET_AP; //Note SET-AP
+		else if (cstr_compare(arg, "AS")) return SET_AS;  //Note SET-AS
+		else if (cstr_compare(arg, "AR")) return SET_AR; //Note SET-AR
+		else if (cstr_compare(arg, "AW")) return SET_AW; //Note Set-AW
+		else if (cstr_compare(arg, "HW")) return SET_HW; //Note SET-HW
+		else if (cstr_compare(arg, "HR")) return SET_HR; //Note SET-HR
+		else if (cstr_compare(arg, "HS")) return SET_HS; //Note SET-HS
+		else if (cstr_compare(arg, "LW")) return SET_LW; //Note SET-LW
+		else if (cstr_compare(arg, "LH")) return SET_LH; //Note SET-LH
+		else if (cstr_compare(arg, "LR")) return SET_LR; //Note SET-LR
+		else if (cstr_compare(arg, "LS")) return SET_LS; //Note SET-LS
+	}
+	else if (cstr_compare(OP, "FILL")) return FILL; //Note FILL
+	else if (cstr_compare(OP, "PUT")) {
+		if (cstr_compare(arg, "W")) return PUT_W; //Note PUT-W
+		else if (cstr_compare(arg, "H")) return PUT_H;  //Note PUT-H
+		else if (cstr_compare(arg, "R")) return PUT_R; //Note PUT-R
+		else if (cstr_compare(arg, "S")) return PUT_S; //Note PUT-S
+	}
+	else if (cstr_compare(OP, "POP")) {
+		if (cstr_compare(arg, "W")) return POP_W; //Note POP-W
+		else if (cstr_compare(arg, "H")) return POP_H;  //Note POP-H
+		else if (cstr_compare(arg, "R")) return POP_R; //Note POP-R
+		else if (cstr_compare(arg, "S")) return POP_S; //Note POP-S
+	}
+	else if (cstr_compare(OP, "MOV")) {
+		if (cstr_compare(arg, "W")) return MOV_W; //Note MOV-W
+		else if (cstr_compare(arg, "H")) return MOV_H;  //Note MOV-H
+		else if (cstr_compare(arg, "R")) return MOV_R; //Note MOV-R
+		else if (cstr_compare(arg, "S")) return MOV_S; //Note MOV-S
+	}
+	else if (cstr_compare(OP, "GET")) {
+		if (cstr_compare(arg, "E")) return GET_E; //Note GET-E
+		else if (cstr_compare(arg, "W")) return GET_W; //Note GET-W
+		else if (cstr_compare(arg, "RW")) return GET_RW; //Note GET-RW
+		else if (cstr_compare(arg, "RH")) return GET_RH; //Note GET-RH
+		else if (cstr_compare(arg, "SW")) return GET_SW; //Note GET-SW
+		else if (cstr_compare(arg, "SH")) return GET_SH; //Note GET-SH
+		else if (cstr_compare(arg, "SR")) return GET_SR; //Note GET-SR
+		else if (cstr_compare(arg, "S")) return GET_S; //Note GET-S
+		else if (cstr_compare(arg, "LW")) return GET_LW; //Note GET-LW
+		else if (cstr_compare(arg, "LH")) return GET_LH; //Note GET-LH
+		else if (cstr_compare(arg, "LR")) return GET_LR; //Note GET-LR
+		else if (cstr_compare(arg, "LS")) return GET_LS; //Note GET-LS
 	}
 	return undefined;
 }
@@ -473,7 +533,7 @@ namespace Storage_NS {
 		if (p1) cin >> *p1;
 		if (a) cin >> *a;
 		if (dd) {
-			string dd_str;
+			char dd_str[3];
 			cin >> dd_str;
 			dd[0] = dd_str[0];
 			dd[1] = dd_str[1];
@@ -586,9 +646,9 @@ int main(int argc, const char** argv)
 	char dd[2] = { '\0','\0' };
 	char* ddptr = &dd[0];
 
-	string opSelection = "\0";
+	char opSelection[10] = "\0";
 
-	while (opSelection != "END")
+	while (!cstr_compare(opSelection, "END"))
 	{
 		// bool success = false;
 		errorCount = 0;
