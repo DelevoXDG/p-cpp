@@ -77,7 +77,6 @@ void cstr_substr(char* str, char* substr, int begin, int end)
 		j++;
 	}
 	substr[j] = '\0';
-	//return substr;
 }
 
 int cstr_length(char* str) {
