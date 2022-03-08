@@ -3,9 +3,9 @@
 #include<string>
 using std::string;
 
-string subs(const string str, int begin, int end) {
+string subs(const string str, const size_t begin, const size_t end) {
 	string sub_str = "";
-	for (int i = begin; i < end; i++) {
+	for (size_t i = begin; i < end; i++) {
 		sub_str += str[i];
 	}
 	return sub_str;
@@ -14,57 +14,55 @@ string subs(const string str, int begin, int end) {
 string FormatujNapis(string str, const string arg_1, const string arg_2, const string arg_3) {
 	const string args[3] = { arg_1, arg_2, arg_3 };
 
-	short int n = 0;
+	unsigned char n = 0;
 	string doneStr = "";
-	string pendingStr = "";
 
 	size_t i = 0;
 	while (i < str.size()) {
-		pendingStr = "";
-
 		if (str[i] == '{') {
-			char OP = str[i + 1]; //Get instruction
-			n = int(str[i + 3]) - int('0'); //Get n int value 
+			char OP = str[i + 1];
+			n = int(str[i + 3]) - int('0');
 
 			switch (OP) {
 			case 'p': {  //Note {p:n:c}
 				char c = str[i + 5];
-				pendingStr = subs(str, i + 7, str.size());
-				string inser(n, c);
-				str = doneStr + inser + pendingStr;
+				string pendingStr = subs(str, i + 7, str.size());
+				string inserStr(n, c);
+				str = doneStr + inserStr + pendingStr;
 				break;
 			}
 			case 'u': { //Note {u:n}
-				pendingStr = subs(str, i + 5 + n, str.size());
+				string pendingStr = subs(str, i + 5 + n, str.size());
 				str = doneStr + pendingStr;
 				break;
 			}
 			case 'U': { //Note {U:n}
-				pendingStr = subs(str, i + 5, str.size());
+				string pendingStr = subs(str, i + 5, str.size());
 				doneStr.resize(doneStr.size() - n);
+
 				i -= n; //Reset pos
 				str = doneStr + pendingStr;
 				break;
 			}
 			case 'w': { //Note {w:n}
-				pendingStr = subs(str, i + 5, str.size());
-				string inser = args[n - 1];
-				str = doneStr + inser + pendingStr;
+				string pendingStr = subs(str, i + 5, str.size());
+				string inserStr = args[n - 1];
+				str = doneStr + inserStr + pendingStr;
 				break;
 			}
 			case 'W': { //Note {W:n:m}
-				pendingStr = subs(str, i + 7, str.size());
-				short int m = int(str[i + 5]) - int('0'); //Get m
+				unsigned char m = int(str[i + 5]) - int('0');
 
-				string inser = args[n - 1];
-				if (inser.size() < m) {
-					string fill(m - inser.size(), ' ');
-					inser += fill;
+				string pendingStr = subs(str, i + 7, str.size());
+				string inserStr = args[n - 1];
+				if (inserStr.size() < m) {
+					string fill(m - inserStr.size(), ' ');
+					inserStr += fill;
 				}
-				else if (inser.size() > m) {
-					inser.resize(m);
+				else if (inserStr.size() > m) {
+					inserStr.resize(m);
 				}
-				str = doneStr + inser + pendingStr;
+				str = doneStr + inserStr + pendingStr;
 				break;
 			}
 			}
@@ -136,7 +134,7 @@ string NormalizujNapis(const string str) {
 
 string UsunSlowo(const string str, const int removed_word_num) {
 	string doneStr = "";
-	int  wordCount = 0;
+	unsigned int wordCount = 0;
 	unsigned int wordLen = 0;
 
 	size_t i = 0;

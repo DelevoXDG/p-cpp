@@ -9,6 +9,7 @@ typedef unsigned char uint8;
 typedef unsigned short int uint16;
 typedef unsigned long long uint64;
 
+
 enum Instruction {
 	//lowercase - location
 	//UPPERCASE - n3w value 
