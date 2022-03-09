@@ -1,2 +1,3 @@
-# P1 Tasks
-Programmming 1 assingments 2021-2022
+# CPP Assignments
+### Programming 1 (2021-2022)
+### Programming 2 (2021-2022)
