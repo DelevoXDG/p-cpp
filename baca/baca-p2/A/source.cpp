@@ -98,14 +98,14 @@ void Print(int set, char* out) {
 		*(out + 5) = '\0';
 		return;
 	}
-	else if (seq_idx < 0) { 	// Loop exit condition
+	else if (seq_idx < 0) { 							// Loop exit condition
 		*(out + str_i) = '\0';
 		seq_idx = 31;
 		str_i = 0;
 		return;
 	}
-	else if (set & (1 << seq_idx)) { // If sequence of seq_idx intersects with the set (seq is an element of the set)
-		*(out + str_i + 0) = '0' + (seq_idx / 16) % 2; //Convert idx to set
+	else if (set & (1 << seq_idx)) {					// If sequence of seq_idx intersects with the set (seq is an element of the set)
+		*(out + str_i + 0) = '0' + (seq_idx / 16) % 2;	//Convert idx to set
 		*(out + str_i + 1) = '0' + (seq_idx / 8) % 2;
 		*(out + str_i + 2) = '0' + (seq_idx / 4) % 2;
 		*(out + str_i + 3) = '0' + (seq_idx / 2) % 2;
@@ -127,7 +127,7 @@ bool Nonempty(int set) {
 }
 bool Member(char* cstr, int set) {
 	static int i = 0;
-	if (*(cstr + i) == '\0') { i = 0; } 		// 	Loop exit condition
+	if (*(cstr + i) == '\0') { i = 0; } 				// 	Loop exit condition
 	else if (*(cstr + i) == ' ') { i++; }
 	else {
 		bool result = set & Set_Idx_Parse(cstr, i); 	//	Intersection of set and singleton of seq
@@ -160,10 +160,10 @@ void Symmetric(int A, int B, int* C) {
 void Difference(int A, int B, int* C) {
 	*C = (A & ~B);
 }
-int Cardinality(int set) { // Number of 1s int bitwise set representation 
+int Cardinality(int set) { 	// Number of 1s int bitwise set representation 
 	static int i = 31;
 
-	if (i < 0) { // Loop exit condition
+	if (i < 0) { 			// Loop exit condition
 		i = 31;
 		return 0;
 	}
@@ -181,7 +181,7 @@ bool LessThen(int A, int B) { // A < B ?
 	if (cardA == cardB) {
 		// int lexbigger = Lexicographically_Bigger(A, B);
 		// if (lexbigger == -1) 	return true;
-		// if (lexbigger == 0) 	return false;
+		// if (lexbigger == 0) 		return false;
 		// if (lexbigger == 1)		return false;
 		return A < B;
 	}
@@ -193,7 +193,7 @@ bool LessEqual(int A, int B) { // A <= B ?
 	if (cardA == cardB) {
 		// int lexbigger = Lexicographically_Bigger(A, B);
 		// if (lexbigger == -1) 	return true;
-		// if (lexbigger == 0) 	return true;
+		// if (lexbigger == 0) 		return true;
 		// if (lexbigger == 1)		return false;
 		return A <= B;
 	}
@@ -217,7 +217,7 @@ bool GreatThen(int A, int B) { // A > B ?
 	if (cardA == cardB) {
 		// int lexbigger = Lexicographically_Bigger(A, B);
 		// if (lexbigger == -1) 	return false;
-		// if (lexbigger == 0) 	return false;
+		// if (lexbigger == 0) 		return false;
 		// if (lexbigger == 1)		return true;
 		return A > B;
 	}
