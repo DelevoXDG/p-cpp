@@ -34,3 +34,6 @@
 
 # Tests
 **[Tt]ests/
+
+#Selective ignore
+labs/labs-p2/Assignments/lab1/*
