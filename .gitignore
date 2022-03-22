@@ -18,12 +18,19 @@
 .vscode/
 .vs/*
 *.code-workspace
-.terminal-presets.json 
+.terminal-presets.json
 
-#Personal
+# Misc folders
 [Mm]isc/
 [Rr]ef
+**_REF/
 [Gg]lobal[Rr]ef
 
-#BACA
+# Misc files
+*.pdf
+
+# Baca
 .baca/
+
+# Tests
+**[Tt]ests/
