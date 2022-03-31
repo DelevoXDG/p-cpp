@@ -1,11 +1,14 @@
 #include <iostream>
 
-using std::cin; using std::cout; using std::endl; using std::string;
+using std::cin;
+using std::cout;
+using std::endl;
+using std::ostream;
 
 struct RopeID;
+struct Rope;
 struct Bead;
 struct Connection;
-struct Rope;
 
 template <typename T> struct Node;
 template <typename T> struct LinkedList;
@@ -15,10 +18,12 @@ struct Node {
 public:
 	T _data;
 	Node<T>* _next;
+	Node<T>(T data, Node<T>* next) : _data(data), _next(next) {}
 
 	void InsertData(Bead);
-	void Print() {
-		_data.Print();
+	friend ostream& operator<<(ostream& os, const T& data) {
+		os << data;
+		return os;
 	}
 };
 template <typename T> struct LinkedList {
@@ -29,8 +34,6 @@ public:
 	void Insert(T);
 	void Remove(T);
 	Node<T>* Get_Node(T);
-
-
 };
 
 template <typename T>
@@ -47,32 +50,34 @@ Node<T>* LinkedList<T>::Get_Node(T object) {
 
 template <typename T>
 void LinkedList<T>::Insert(T newdata) {
-
-	if (newdata < _first->data) {
-
+	if (_first == nullptr) {
+		_first = new Node<T>(data, nullptr);
+		return;
 	}
-
 
 	Node<T>* cur_node = _first;
-	while (cur_node != nullptr) {
-		if (cur_node->_data == newdata) { return; }
-		if (cur_node->_next == nullptr) { return; }
+	Node<T>* prev = nullptr;
+	while (cur_node != nullptr && cur_node->_data != newdata) {
+		// if (cur_node->_next == nullptr) { return; }
 		// if (cur_node->_next->_data == newdata) { return; }
-
 		if (newdata < cur_node->_data) {
-			Node<T>* after_next = cur_node->_next;
-
-			Node<T>* next = new Node<T>();
-			next->_next = after_next;
-			next->_data = newdata;
-
-			cur_node->_next = next;
+			Node<T>* new_Node = new Node<T>(newdata, cur_node);	//new data node
+			if (prev != nullptr) {
+				prev->next = new_Node;
+			}
+			else {
+				_first = new_Node;
+			}
 			return;
 		}
-
+		prev = cur_node;			// Previous node
 		cur_node = cur_node->_next;	// "Incrementation"
 	}
+	// if newdata contains biggest element
+	prev->next = new Node<T>(newdata, nullptr);
 }
+
+
 void Node<Rope>::InsertData(Bead new_bead) {
 	_data.Insert(new_bead);
 }
@@ -83,6 +88,11 @@ struct RopeID {
 
 	RopeID() {}
 	RopeID(const char id0, const char id1, const char id2) : _id0(id0), _id1(id1), _id2(id2) {}
+
+	friend ostream& operator<<(ostream& os, const RopeID& rope_id) {
+		os << rope_id._id0 << rope_id._id1 << rope_id._id2;
+		return os;
+	}
 
 	bool operator==(const RopeID rope) {
 		if (_id0 != rope._id0) { return false; }
@@ -102,29 +112,25 @@ struct RopeID {
 		if (_id2 != rope._id2) { return _id2 < rope._id2; }
 		return false;
 	}
-	bool operator<=(const RopeID rope) {
-		if (_id0 != rope._id0) { return _id0 < rope._id0; }
-		if (_id1 != rope._id1) { return _id1 < rope._id1; }
-		if (_id2 != rope._id2) { return _id2 < rope._id2; }
-		return true;
-	}
 };
+
+
 struct Connection {
 public:
-	RopeID _rope;
-	int _dest_beadID;
+	RopeID _dest_rope_id;
+	int _dest_bead_ID;
 	Connection() {};
 
 	bool operator==(const Connection link) {
-		if (_rope != link._rope) { return false; }
-		if (_dest_beadID != link._dest_beadID) { return false; }
+		if (_dest_rope_id != link._dest_rope_id) { return false; }
+		if (_dest_bead_ID != link._dest_bead_ID) { return false; }
 		return true;
 	}
 	bool operator!=(const Connection link) {
 		return !(*this == link);
 	}
 	bool operator<(const Connection link) {
-		return _rope < link._rope;
+		return _dest_rope_id < link._dest_rope_id;
 	}
 };
 struct Rope {
@@ -152,9 +158,10 @@ public:
 	bool operator!=(const Rope rope) { return _id != rope._id; }
 	bool operator<(const Rope rope) { return _id < rope._id; }
 	void Print() {
-		std::cout << _id._id0 << _id._id1 << _id._id2 << std::endl;
+		cout << _id._id0 << _id._id1 << _id._id2 << endl;
 		// bead_List.Print();
 	}
+
 };
 struct Bead {
 private:
@@ -177,14 +184,14 @@ public:
 	}
 	void Attach_To(RopeID rope, int bead_id) {
 		Connection connection;
-		connection._rope = rope;
-		connection._dest_beadID = bead_id;
+		connection._dest_rope_id = rope;
+		connection._dest_bead_ID = bead_id;
 		//[ ] pending adding to LL
 	}
 	void Detach_From(RopeID rope, int bead_id) {
 		Connection connection;
-		connection._rope = rope;
-		connection._dest_beadID = bead_id;
+		connection._dest_rope_id = rope;
+		connection._dest_bead_ID = bead_id;
 		//[ ] pending removal to LL
 	}
 	void Print() {
