@@ -1,4 +1,14 @@
-# Everything
+# Unignore
+!SO_Extra/**
+
+# Binaries (no extension)
+# Ignore all
+*
+# Unignore all with extensions
+!*.*
+# Unignore all dirs
+!*/
+# Unignore gitignore
 !.gitignore
 
 # C++ files
@@ -35,5 +45,5 @@
 # Tests
 **[Tt]ests/
 
-#Selective ignore
+# Selective ignore
 labs/labs-p2/Assignments/lab1/*
