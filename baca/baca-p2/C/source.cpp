@@ -82,7 +82,7 @@ public:
 	}
 
 };
-inline bool isNegative(const std::string str) {
+bool isNegative(const std::string str) {
 	return str[0] == '-';
 }
 std::string removeSign(const std::string str) {
@@ -97,10 +97,88 @@ std::string rmZeros(const std::string str, uint64 i = 0) {
 	if (i > size || str[i] != '0') { // Recursion exit condition
 		return str.substr(i, size);
 	}
+	i++;
+	return rmZeros(str, i);
+}
+std::string strReverse(const std::string& str, size_t i = 0) {
+	if (i >= str.size()) { // Exit condition
+		return "";
+	}
 
-	return rmZeros(str, i + 1);
+	return str[str.length() - 1 - i] + strReverse(str, i + 1);
+
 }
 
+std::string addNumStr(const std::string& strA, const std::string& strB, int carry = 0, size_t i = 0) {
+	size_t sizeA = strA.length();
+	size_t sizeB = strB.length();
+	if (carry > 0 || (i < sizeA && i < sizeB)) {
+		std::string tmp("");
+		int curCarry = carry;
+		if (i < sizeA) {
+			curCarry += strA[sizeA - 1 - i] - carry - '0';
+		}
+		if (i < sizeB) {
+			curCarry += strB[sizeB - 1 - i] - carry - '0';
+		}
+		if (curCarry >= 10) {
+			curCarry = curCarry - 10;
+			carry = 1;
+		}
+		else carry = 0;
+
+		tmp = tmp + std::string(1, char(curCarry + '0')) + addNumStr(strA, strB, carry, i + 1);
+
+		if (i != 0) {
+			return tmp;
+		}
+		// End of first caller 
+		return strReverse(tmp); // reverse final result
+	}
+	if (i < strA.length()) { // && >= b.length 
+		return strReverse(strA.substr(0, strA.length() - i));
+	}
+	if (i < strB.length()) {
+		return strReverse(strB.substr(0, strB.length() - i));
+	}
+
+	return "";
+}
+std::string SubNumStr(const std::string& strA, const std::string& strB, int carry = 0, size_t i = 0) {
+	size_t sizeA = strA.length();
+	size_t sizeB = strB.length();
+
+	if (carry != 0 || i < strB.length()) {
+		std::string tmp("");
+		int curCarry = carry;
+
+		if (i < sizeA) {
+			curCarry += strA[sizeA - 1 - i] - carry - '0';
+		}
+		if (i < sizeB) {
+			curCarry -= strA[sizeB - 1 - i] - '0';
+		}
+		if (curCarry >= 0)
+			carry = 0;
+		else {
+			curCarry = curCarry + 10;
+			carry = 1;
+		}
+
+		tmp = tmp + std::string(1, char(curCarry + '0')) + SubNumStr(strA, strB, carry, i + 1);
+
+		if (i != 0) {
+			return tmp;
+		}
+		// End of first caller 
+		return strReverse(tmp); // reverse final result
+	}
+	if (i < strA.length()) { // && >= b.length 
+		return strReverse(strA.substr(0, strA.length() - i));
+	}
+
+	return "";
+}
 
 
 std::string sumTwo(const std::string& inStr1, const std::string& inStr2) {
@@ -130,39 +208,85 @@ std::string sumTwo(const std::string& inStr1, const std::string& inStr2) {
 		}
 		return str1;
 	}
-	if ((!isNegative(inStr1) != !isNegative(inStr2))) {
+	if ((!isNegative(inStr1) != !isNegative(inStr2))) { //xor
 		if (cmpRes.equal()) {
 			return "0";
 		}
 		if (isNegative(inStr1)) {
 			if (cmpRes.greater()) {
-				return "-" + rmZeros(sub(str1, str2));
+				return "-" + rmZeros(SubNumStr(str1, str2));
 			}
-			return rmZeros(sub(str2, str1));
+			return rmZeros(SubNumStr(str2, str1));
 		}
 		else {
 			if (cmpRes.lesser()) {
-				return "-" + rmZeros(sub(str2, str1));
+				return "-" + rmZeros(SubNumStr(str2, str1));
 			}
-			return rmZeros(sub(str1, str2));
+			return rmZeros(SubNumStr(str1, str2));
 			// return cmpRes.lesser() ? "-" + rmZeros(sub(str2, str1)) : rmZeros(sub(str1, str2));
 		}
 	}
 	if (isNegative(inStr1) && isNegative(inStr2)) {
-		return "-" + add(str1, str2);
+		return "-" + addNumStr(str1, str2);
 	}
 
-	return add(str1, str2);
+	return addNumStr(str1, str2);
 }
 
-std::string subSum(int argc, const std::string* args, int n) {
-	if (n >= argc) {
+std::string subSum(const int argc, int i, const std::string* args) {
+	if (i >= argc) {
 		return "0";
 	}
+	return sumTwo(args[i], Sum(argc, i + 1, args));
+}
+std::string subSumVa(const int argc, int i, std::va_list va_args) {
+	if (i >= argc) {
+		return "0";
+	}
+	return sumTwo(va_arg(va_args, char*), subSumVa(argc, i + 1, va_args));
+}
 
-	return "0";
-}
 // Section Implementation
-std::string Sum(int argCount, const std::string* args) {
-	return subSum(argCount, args, 0);
+std::string Sum(int argc, const std::string* args) {
+	std::string res = subSum(argc, 0, args);
+
+	return res;
 }
+std::string Sum(int argc, ...) {
+	std::va_list va_args;
+
+	va_start(va_args, argc);
+	std::string res = subSumVa(argc, 0, va_args);
+	va_end(va_args);
+
+	return res;
+}
+void Sum(std::string* res, int argc, const std::string* args) {
+	res->clear();
+	*res = subSum(argc, 0, args);
+}
+void Sum(std::string* res, int argc, ...) {
+	res->clear();
+	std::va_list va_args;
+
+	va_start(va_args, argc);
+	*res = subSumVa(argc, 0, va_args);
+	va_end(va_args);
+
+}
+std::string Mult(int argc, const std::string* args) {
+	std::string res = subMult(argc, 0, args);
+
+	return res;
+}
+std::string Mult(int argc, ...) {
+	std::va_list va_args;
+
+	va_start(va_args, argc);
+	std::string res = subMultVa(argc, 0, va_args);
+	va_end(va_args);
+
+	return res;
+}
+
+
