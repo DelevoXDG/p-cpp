@@ -110,19 +110,19 @@ std::string strReverse(const std::string& str, uint64 i = 0) {
 	return str[str.size() - i] + strReverse(str, i);
 }
 
-std::string addNumStr(const std::string& strA, const std::string& strB, int carry = 0, uint64 i = 0) {
+std::string addNumStr(const std::string& strA, const std::string& strB, short int carry = 0, uint64 i = 0) {
 	uint64 sizeA = strA.size();
 	uint64 sizeB = strB.size();
 	std::string tmp("");
 	if ((i < sizeA && i < sizeB) || carry > 0) {
-		int digitSum = 0;
+		short int digitSum = 0;
 		if (i < sizeA) {
 			digitSum += int(strA[sizeA - 1 - i] - '0');
 		}
 		if (i < sizeB) {
 			digitSum += int(strB[sizeB - 1 - i] - '0');
 		}
-		int reducedDigitSum = digitSum + carry;
+		short int reducedDigitSum = digitSum + carry;
 		if (reducedDigitSum >= 10) {
 			reducedDigitSum = reducedDigitSum - 10;
 			carry = 1;
@@ -134,11 +134,6 @@ std::string addNumStr(const std::string& strA, const std::string& strB, int carr
 
 		tmp = tmp + std::string(1, char(reducedDigitSum + '0')) + addNumStr(strA, strB, carry, i + 1);
 
-	// 	if (i == 0) { // End of first caller 
-	// 		tmp = strReverse(tmp);
-	// 	}
-
-	// 	return tmp;
 	}
 	else if (i >= strB.size() && i < strA.size()) {
 		tmp = strReverse(strA.substr(0, strA.size() - i));
@@ -153,17 +148,17 @@ std::string addNumStr(const std::string& strA, const std::string& strB, int carr
 
 	return tmp;
 }
-std::string SubNumStr(const std::string& strA, const std::string& strB, int carry = 0, uint64 i = 0) {
+std::string SubNumStr(const std::string& strA, const std::string& strB, short int carry = 0, uint64 i = 0) {
 	uint64 sizeA = strA.size();
 	uint64 sizeB = strB.size();
 	std::string tmp("");
 	if (i < strB.size() || carry > 0) {
-		int digitSum = 0;
+		short int digitSum = 0;
 		digitSum += int(strA[sizeA - 1 - i] - '0');
 		if (i < sizeB) {	// Or nothing to subtract
 			digitSum -= int(strB[sizeB - 1 - i] - '0');
 		}
-		int reducedDigitSum = digitSum - carry;
+		short int reducedDigitSum = digitSum - carry;
 		if (reducedDigitSum < 0) {
 			reducedDigitSum = reducedDigitSum + 10;
 			carry = 1;
@@ -172,19 +167,14 @@ std::string SubNumStr(const std::string& strA, const std::string& strB, int carr
 			carry = 0;
 		}
 
-		tmp = tmp + std::string(1, char(reducedDigitSum + '0')) + SubNumStr(strA, strB, carry, i + 1);
-
-		// if (i == 0) {
-		// 	tmp = strReverse(tmp);
-		// }
-
-		// return tmp;
+		tmp = tmp + std::string(1, char(reducedDigitSum + '0'))
+			+ SubNumStr(strA, strB, carry, i + 1);
 	}
 	else if (i < strA.size()) {
-		tmp = strA.substr(0, strA.size() - i);
+		tmp = strReverse(strA.substr(0, strA.size() - i));
 	}
 	if (i == 0) {// End of first caller 
-		return strReverse(tmp);
+		tmp = strReverse(tmp);
 	}
 
 	return tmp;
@@ -203,36 +193,21 @@ std::string sumTwo(const std::string& inStr1, const std::string& inStr2) {
 
 	Comparison cmpRes(str1, str2);
 
-	if (str1 == "0") {
-		if (str2 == "0") {
-			return "0";
-		}
-		if (isNegative(inStr2)) {
-			str2 = "-" + str2;
-		}
-		return str2;
-	}
-	if (str2 == "0") {
-		if (isNegative(inStr1)) {
-			str1 = "-" + str1;
-		}
-		return str1;
-	}
 	if ((isNegative(inStr1) != isNegative(inStr2))) { //xor
 		if (cmpRes.equal()) {
 			return "0";
 		}
-		if (isNegative(inStr1)) {
+		if (isNegative(inStr2)) {
+			if (cmpRes.greater()) {
+				return rmZeros(SubNumStr(str1, str2));
+			}
+			return "-" + rmZeros(SubNumStr(str2, str1));
+		}
+		else {
 			if (cmpRes.greater()) {
 				return "-" + rmZeros(SubNumStr(str1, str2));
 			}
 			return rmZeros(SubNumStr(str2, str1));
-		}
-		else {
-			if (cmpRes.lesser()) {
-				return "-" + rmZeros(SubNumStr(str2, str1));
-			}
-			return rmZeros(SubNumStr(str1, str2));
 		}
 	}
 	if (isNegative(inStr1) && isNegative(inStr2)) {
@@ -241,14 +216,14 @@ std::string sumTwo(const std::string& inStr1, const std::string& inStr2) {
 
 	return addNumStr(str1, str2);
 }
-std::string multNumChar(const std::string& a, const char& b, char c, uint64 i) {
+std::string multNumbyDigit(const std::string& a, const char& b, short int c, uint64 i) {
 	// [ ] todo
 	if (i < a.size() || c != 0) {
-		char x = c;
+		short int x = c;
 		x += i < a.size() ? (*(a.rbegin() + i) - '0') * (b - '0') : 0;
 		std::string temp = "";
 		temp += x % 10 + '0';
-		temp += multNumChar(a, b, x / 10, i + 1);
+		temp += multNumbyDigit(a, b, x / 10, i + 1);
 		return i == 0 ? strReverse(temp) : temp;
 	}
 	else {
@@ -263,7 +238,7 @@ std::string multNumStr(const std::string& strA, const std::string& strB, uint64 
 	}
 	std::string res("");
 	std::string digitMultRes =
-		multNumChar(strA, strB[sizeB - 1 - i], 0, 0)
+		multNumbyDigit(strA, (short int)strB[sizeB - 1 - i], 0, 0)
 		+ std::string(i, '0');							// * 10^i
 	i++;
 	std::string nextMult = multNumStr(strA, strB, i);
@@ -272,7 +247,7 @@ std::string multNumStr(const std::string& strA, const std::string& strB, uint64 
 	return res;
 }
 
-std::string multTwo(std::string inStr1, std::string inStr2) {
+std::string multTwo(const std::string& inStr1, const std::string& inStr2) {
 	std::string str1(inStr1);
 	std::string str2(inStr2);
 
@@ -296,36 +271,66 @@ std::string multTwo(std::string inStr1, std::string inStr2) {
 	return res;
 }
 
+std::string Repeat(std::string(*f)(const std::string&, const std:: string&), int argc, int i, const std::string* args) {
+	if (i >= argc) {
+		if (f == sumTwo) return "0";
+		if (f == multTwo) return "1";
 
-std::string subSum(const int argc, int i, const std::string* args) {
+		return "e";
+	}
+	std::string curElement = args[i];
+	std::string nextValues = Repeat(f, argc, ++i, args);
+	return f(nextValues, curElement);
+}
+std::string sumMany(const int argc, int i, const std::string* args) {
 	if (i >= argc) {
 		return "0";
 	}
-	i++;
-	return sumTwo(args[i - 1], Sum(argc, i, args));
+	std::string curElement = args[i];
+	std::string nextSum = sumMany(argc, ++i, args);
+
+	return sumTwo(nextSum, curElement);
 }
-std::string subSumVa(const int argc, int i, std::va_list va_args) {
+std::string sumManyVa(const int argc, int i, std::va_list& va_args) {
 	if (i >= argc) {
 		return "0";
 	}
-	i++;
-	return sumTwo(va_arg(va_args, char*), subSumVa(argc, i, va_args));
+	std::string curElement = std::string(va_arg(va_args, char*));
+	std::string nextSum = sumManyVa(argc, ++i, va_args);
+	return sumTwo(nextSum, curElement);
 }
-std::string Mult(int argc, const std::string* args, int i) {
+std::string multMany(int argc, int i, const std::string* args) {
 	if (i >= argc) {
 		return "1";
 	}
-	i++;
-	// [ ] todo
-	return "1";
+	std::string curElement = args[i];
+	std::string nextSum = multMany(argc, ++i, args);
+
+	return multTwo(nextSum, curElement);
+}
+std::string multManyVa(const int argc, int i, std::va_list& va_args) {
+	if (i >= argc) {
+		return "0";
+	}
+	std::string curElement = std::string(va_arg(va_args, char*));
+	std::string nextSum = multManyVa(argc, ++i, va_args);
+
+	return multTwo(nextSum, curElement);
+}
+void fillVaArray(const int argc, int i, std::va_list& va_args, std::string* arr) {
+	if (i >= argc) {
+		return;
+	}
+	arr[i] = std::string(va_arg(va_args, char*));
+	fillVaArray(argc, ++i, va_args, arr);
 }
 
-// Section Implementation
+// Section Required functions
 std::string Sum(int argc, const std::string* args) {
 	if (argc == 0) {
 		return "0";
 	}
-	std::string res = subSum(argc, 0, args);
+	std::string res = Repeat(sumTwo, argc, 0, args);
 
 	return res;
 }
@@ -333,12 +338,14 @@ std::string Sum(int argc, ...) {
 	if (argc == 0) {
 		return "0";
 	}
+
 	std::va_list va_args;
-
+	std::string argsArr[argc];
+	std::string* args = &argsArr[0];
 	va_start(va_args, argc);
-	std::string res = subSumVa(argc, 0, va_args);
+	fillVaArray(argc, 0, va_args, args);
 	va_end(va_args);
-
+	std::string res = Sum(argc, args);
 	return res;
 }
 void Sum(std::string* res, int argc, const std::string* args) {
@@ -346,7 +353,7 @@ void Sum(std::string* res, int argc, const std::string* args) {
 	if (argc == 0) {
 		*res = "0";
 	}
-	*res = subSum(argc, 0, args);
+	*res = sumMany(argc, 0, args);
 }
 void Sum(std::string* res, int argc, ...) {
 	res->clear();
@@ -356,7 +363,7 @@ void Sum(std::string* res, int argc, ...) {
 	std::va_list va_args;
 
 	va_start(va_args, argc);
-	*res = subSumVa(argc, 0, va_args);
+	*res = sumManyVa(argc, 0, va_args);
 	va_end(va_args);
 
 }
