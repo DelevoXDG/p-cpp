@@ -5,6 +5,7 @@
 #include <string>
 #include <cstdarg>
 typedef unsigned long long uint64, ull;
+typedef unsigned long long int64, ll;
 
 // Section Declarations
 std::string Sum(int, const std::string*);
@@ -83,17 +84,17 @@ public:
 	}
 
 };
-bool isNegative(const std::string str) {
+bool isNegative(const std::string& str) {
 	return str[0] == '-';
 }
-std::string removeSign(const std::string str) {
+std::string removeSign(const std::string& str) {
 	if (str[0] == '+' || str[0] == '-') {
 		return str.substr(1, str.size());
 	}
 
 	return str;
 }
-std::string rmZeros(const std::string str, uint64 i = 0) {
+std::string rmZeros(const std::string& str, uint64 i = 0) {
 	uint64 size = str.size();
 	if (i > size || str[i] != '0') { // Recursion exit condition
 		return str.substr(i, size);
@@ -107,7 +108,6 @@ std::string strReverse(const std::string& str, uint64 i = 0) {
 	}
 	i++;
 	return str[str.size() - i] + strReverse(str, i);
-
 }
 
 std::string addNumStr(const std::string& strA, const std::string& strB, int carry = 0, uint64 i = 0) {
@@ -115,69 +115,79 @@ std::string addNumStr(const std::string& strA, const std::string& strB, int carr
 	uint64 sizeB = strB.size();
 	std::string tmp("");
 	if ((i < sizeA && i < sizeB) || carry > 0) {
-		int extraCarry = 0;
+		int digitSum = 0;
 		if (i < sizeA) {
-			extraCarry += int(strA[sizeA - 1 - i] - carry) - '0';
+			digitSum += int(strA[sizeA - 1 - i] - '0');
 		}
 		if (i < sizeB) {
-			extraCarry += int(strB[sizeB - 1 - i] - carry) - '0';
+			digitSum += int(strB[sizeB - 1 - i] - '0');
 		}
-		int curCarry = 0;
-		if (carry + extraCarry >= 10) {
-			curCarry = carry + extraCarry - 10;
+		int reducedDigitSum = digitSum + carry;
+		if (reducedDigitSum >= 10) {
+			reducedDigitSum = reducedDigitSum - 10;
 			carry = 1;
 		}
-		else { carry = 0; }
-
-		tmp = tmp + std::string(1, char(curCarry + '0')) + addNumStr(strA, strB, carry, i + 1);
-
-		if (i == 0) { // End of first caller 
-			tmp = strReverse(tmp);
+		else {
+			// reducedDigitSum = carry + digitSum;
+			carry = 0;
 		}
 
-		return tmp;
+		tmp = tmp + std::string(1, char(reducedDigitSum + '0')) + addNumStr(strA, strB, carry, i + 1);
+
+	// 	if (i == 0) { // End of first caller 
+	// 		tmp = strReverse(tmp);
+	// 	}
+
+	// 	return tmp;
 	}
-	if (i >= strB.size() && i < strA.size()) {
-		return strReverse(strA.substr(0, strA.size() - i));
+	else if (i >= strB.size() && i < strA.size()) {
+		tmp = strReverse(strA.substr(0, strA.size() - i));
 	}
-	if (i < strB.size() && i >= strA.size()) {
-		return strReverse(strB.substr(0, strB.size() - i));
+	else if (i < strB.size() && i >= strA.size()) {
+		tmp = strReverse(strB.substr(0, strB.size() - i));
 	}
 
-	return "";
+	if (i == 0) { // End of first caller 
+		tmp = strReverse(tmp);
+	}
+
+	return tmp;
 }
 std::string SubNumStr(const std::string& strA, const std::string& strB, int carry = 0, uint64 i = 0) {
 	uint64 sizeA = strA.size();
 	uint64 sizeB = strB.size();
 	std::string tmp("");
 	if (i < strB.size() || carry > 0) {
-		int extraCarry = 0;
-		if (i < sizeA) {
-			extraCarry += int(strA[sizeA - 1 - i] - carry) - '0';
+		int digitSum = 0;
+		digitSum += int(strA[sizeA - 1 - i] - '0');
+		if (i < sizeB) {	// Or nothing to subtract
+			digitSum -= int(strB[sizeB - 1 - i] - '0');
 		}
-		if (i < sizeB) {
-			extraCarry -= int(strA[sizeB - 1 - i]) - '0';
-		}
-		int curCarry = 0;
-		if (carry + extraCarry < 0) {
-			curCarry = carry + extraCarry + 10;
+		int reducedDigitSum = digitSum - carry;
+		if (reducedDigitSum < 0) {
+			reducedDigitSum = reducedDigitSum + 10;
 			carry = 1;
 		}
-		else { carry = 0; }
-
-		tmp = tmp + std::string(1, char(curCarry + '0')) + SubNumStr(strA, strB, carry, i + 1);
-
-		if (i == 0) { // End of first caller 
-			tmp = strReverse(tmp);
+		else {
+			carry = 0;
 		}
 
-		return tmp;
+		tmp = tmp + std::string(1, char(reducedDigitSum + '0')) + SubNumStr(strA, strB, carry, i + 1);
+
+		// if (i == 0) {
+		// 	tmp = strReverse(tmp);
+		// }
+
+		// return tmp;
 	}
-	if (i < strA.size()) {
-		return strReverse(strA.substr(0, strA.size() - i));
+	else if (i < strA.size()) {
+		tmp = strA.substr(0, strA.size() - i);
+	}
+	if (i == 0) {// End of first caller 
+		return strReverse(tmp);
 	}
 
-	return "";
+	return tmp;
 }
 
 
@@ -231,15 +241,15 @@ std::string sumTwo(const std::string& inStr1, const std::string& inStr2) {
 
 	return addNumStr(str1, str2);
 }
-std::string multNumChar(const std::string& a, const char& b, char c = 0, size_t n = 0)
-{
-	if (n < a.size() || c != 0) {
+std::string multNumChar(const std::string& a, const char& b, char c, uint64 i) {
+	// [ ] todo
+	if (i < a.size() || c != 0) {
 		char x = c;
-		x += n < a.size() ? (*(a.rbegin() + n) - '0') * (b - '0') : 0;
+		x += i < a.size() ? (*(a.rbegin() + i) - '0') * (b - '0') : 0;
 		std::string temp = "";
 		temp += x % 10 + '0';
-		temp += multNumChar(a, b, x / 10, n + 1);
-		return n == 0 ? strReverse(temp) : temp;
+		temp += multNumChar(a, b, x / 10, i + 1);
+		return i == 0 ? strReverse(temp) : temp;
 	}
 	else {
 		return "";
@@ -252,10 +262,12 @@ std::string multNumStr(const std::string& strA, const std::string& strB, uint64 
 		return "0";
 	}
 	std::string res("");
-	std::string multA = multNumChar(strA, strB[sizeA - 1 - i], 0, 0);
+	std::string digitMultRes =
+		multNumChar(strA, strB[sizeB - 1 - i], 0, 0)
+		+ std::string(i, '0');							// * 10^i
 	i++;
-	std::string multB = multNumStr(strA, strB, i);
-	res = addNumStr(multA, multB, 0, 0);
+	std::string nextMult = multNumStr(strA, strB, i);
+	res = addNumStr(nextMult, digitMultRes, 0, 0);
 
 	return res;
 }
@@ -266,18 +278,22 @@ std::string multTwo(std::string inStr1, std::string inStr2) {
 
 	str1 = removeSign(str1);
 	str1 = rmZeros(str1);
-	if (str1 == "0") return "0";
+	if (str1 == "0") {
+		return "0";
+	}
+
 
 	str2 = removeSign(str2);
 	str2 = rmZeros(str2);
-	if (str2 == "0") return "0";
-	else {
-		std::string res = multNumStr(str1, str2, "", 0);
-		if (isNegative(inStr1) != isNegative(inStr2)) {
-			res = "-" + res;
-		}
-		return res;
+	if (str2 == "0") {
+		return "0";
 	}
+
+	std::string res = multNumStr(str1, str2, 0);
+	if (isNegative(inStr1) != isNegative(inStr2)) {
+		res = "-" + res;
+	}
+	return res;
 }
 
 
@@ -344,25 +360,25 @@ void Sum(std::string* res, int argc, ...) {
 	va_end(va_args);
 
 }
-std::string Mult(int argc, const std::string* args) {
-	if (argc == 0) {
-		return "0";
-	}
-	std::string res = subMult(argc, 0, args);
+// std::string Mult(int argc, const std::string* args) {
+// 	if (argc == 0) {
+// 		return "0";
+// 	}
+// 	std::string res = subMult(argc, 0, args);
 
-	return res;
-}
-std::string Mult(int argc, ...) {
-	if (argc == 0) {
-		return "0";
-	}
-	std::va_list va_args;
+// 	return res;
+// }
+// std::string Mult(int argc, ...) {
+// 	if (argc == 0) {
+// 		return "0";
+// 	}
+// 	std::va_list va_args;
 
-	va_start(va_args, argc);
-	std::string res = subMultVa(argc, 0, va_args);
-	va_end(va_args);
+// 	va_start(va_args, argc);
+// 	std::string res = subMultVa(argc, 0, va_args);
+// 	va_end(va_args);
 
-	return res;
-}
+// 	return res;
+// }
 
 
