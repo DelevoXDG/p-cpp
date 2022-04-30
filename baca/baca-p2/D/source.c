@@ -1,6 +1,4 @@
 //Maksim Zdobnikau
-
-
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,8 +7,7 @@
 #define nullptr NULL 
 
 typedef unsigned short int uint16;
-typedef enum
-{
+typedef enum {
 	false = (1 == 0),
 	true = 1 == 1
 } bool;
@@ -28,6 +25,7 @@ typedef enum {
 	SWC,
 	DFR,
 	DLR,
+	DFC,
 	DLC,
 	RMR,
 	RMC,
@@ -39,9 +37,9 @@ typedef enum {
 
 	END,
 	undefined = 404
-} Instruction;
+} Operation;
 
-Instruction opParse(const char* str) {
+Operation opParse(const char* str) {
 	if (strcmp(str, "AFR") == 0) return AFR;
 	if (strcmp(str, "ALR") == 0) return ALR;
 	if (strcmp(str, "ALR") == 0) return ALR;
@@ -55,6 +53,7 @@ Instruction opParse(const char* str) {
 	if (strcmp(str, "SWC") == 0) return SWC;
 	if (strcmp(str, "DFR") == 0) return DFR;
 	if (strcmp(str, "DLR") == 0) return DLR;
+	if (strcmp(str, "DFC") == 0) return DFC;
 	if (strcmp(str, "DLC") == 0) return DLC;
 	if (strcmp(str, "RMR") == 0) return RMR;
 	if (strcmp(str, "RMC") == 0) return RMC;
@@ -131,7 +130,10 @@ int** printMatrix(int** const matrix, const uint16 rowCount, uint16* const rowWi
 	}
 	return matrix;
 }
-void insertRowBefore(int*** matrix, uint16* rowCount, uint16** rowWidth, uint16 newRowWidth, uint16 offset) {
+void insertRowBefore(int*** matrix, uint16* const rowCount, uint16** rowWidth, uint16 newRowWidth, const uint16 offset) {
+	if (newRowWidth <= 0) {
+		return;
+	}
 	if (*matrix == nullptr) {
 		*matrix = malloc(((*rowCount) + 1) * sizeof(**matrix));
 	}
@@ -157,9 +159,10 @@ void insertRowBefore(int*** matrix, uint16* rowCount, uint16** rowWidth, uint16 
 	*rowCount = *rowCount + 1;
 }
 
-void insertArrayBefore(int** array, uint16* rowWidth, uint16 insertedWidth, uint16 before, int** insertedArr) {
+void insertColsBefore(int** array, uint16* rowWidth, const uint16 insertedWidth, uint16 before, int** insertedArr) {
 	*array = realloc(*array, (*rowWidth + insertedWidth) * sizeof(**array));
 	*array = shiftRightArray(*array, before, *rowWidth, insertedWidth);
+
 	int i = 0;
 	if (before >= *rowWidth) {
 		before = *rowWidth;
@@ -185,7 +188,6 @@ void insertRowBeforeFromArr(int*** matrix, uint16* rowCount, uint16** rowWidth, 
 		*rowWidth = realloc(*rowWidth, (*rowCount + 1) * sizeof(**rowWidth));
 	}
 
-
 	int* newRow = malloc(newRowWidth * sizeof(*newRow));
 	int i = 0;
 	for (i = 0; i < newRowWidth; i++) {
@@ -201,7 +203,7 @@ void insertRowBeforeFromArr(int*** matrix, uint16* rowCount, uint16** rowWidth, 
 }
 
 
-void cleanAll(int*** matrix, uint16* rowCount, uint16** rowWidth) {
+void cleanAll(int*** matrix, uint16* const rowCount, uint16** rowWidth) {
 	if (*rowCount == 0) {
 		return;
 	}
@@ -213,38 +215,34 @@ void cleanAll(int*** matrix, uint16* rowCount, uint16** rowWidth) {
 	free(*rowWidth);
 	*matrix = nullptr;
 	*rowWidth = nullptr;
+	*rowCount = 0;
 }
 
 
-void insertBlock(int*** matrix, uint16* rowCount, uint16** rowWidth, uint16 rowOffset, uint16 colOffset, uint16 blockHeight, uint16 blockWidth) {
+
+void insertBlock(int*** matrix, uint16* const rowCount, uint16** rowWidth, const uint16 rowOffset, const uint16 colOffset, const uint16 blockHeight, const uint16 blockWidth) {
 	int** insertedBlock = nullptr;
 	uint16* insertedBlockWidth = nullptr;
 	uint16 curBlockHeight = 0;
-	// insertedBlock = malloc((blockHeight * sizeof(**matrix)));
-	// insertedBlockWidth = malloc((blockHeight * sizeof(**insertedBlock)));
+
 	int i = 0;
 	for (i = 0; i < blockHeight; i++) {
-		// uint16 curRowLen = *(*rowWidth + i);
-		// insertRowBefore(int*** matrix, uint16 * rowCount, uint16 * *rowWidth, uint16 newRowWidth, uint16 offset) {
+
 		insertRowBefore(&insertedBlock, &curBlockHeight, &insertedBlockWidth, blockWidth, curBlockHeight);
 	}
 	// printMatrix(insertedBlock, blockHeight, insertedBlockWidth);
 	for (i = 0; i < blockHeight && i < *rowCount - rowOffset; i++) {
-		// int j = 0;
-		// for (j = 0; j < blockWidth; j++) {
-		// }
-		insertArrayBefore(&*(*matrix + i + rowOffset), &*(*rowWidth + i + rowOffset), blockWidth, colOffset, &*(insertedBlock + i));
+		insertColsBefore(&*(*matrix + i + rowOffset), &*(*rowWidth + i + rowOffset), blockWidth, colOffset, &*(insertedBlock + i));
 	}
 	while (i < blockHeight) {
 		insertRowBeforeFromArr(matrix, rowCount, rowWidth, blockWidth, *rowCount, &*(insertedBlock + i));
 		i++;
 	}
 	cleanAll(&insertedBlock, &curBlockHeight, &insertedBlockWidth);
-
 }
 
 
-void skipLine(uint16 skipCount) {
+void skipLine(const uint16 skipCount) {
 	int dummy = 0;
 	int i = 0;
 	for (i = 0; i < skipCount; i++) {
@@ -252,7 +250,7 @@ void skipLine(uint16 skipCount) {
 	}
 }
 
-void removeRowAt(int*** matrix, uint16* rowCount, uint16** rowWidth, uint16 removedAt) {
+void removeRowAt(int*** matrix, uint16* const rowCount, uint16** rowWidth, const uint16 removedAt) {
 	if (removedAt >= *rowCount) {
 		return;
 	}
@@ -265,7 +263,7 @@ void removeRowAt(int*** matrix, uint16* rowCount, uint16** rowWidth, uint16 remo
 
 	*rowCount = *rowCount - 1;
 }
-void removeBlock(int*** matrix, uint16* rowCount, uint16** colCount, uint16 rowStart, uint16 columnStart, uint16 rowOffset, uint16 colOffset) {
+void removeBlock(int*** matrix, uint16* const rowCount, uint16** colCount, const uint16 rowStart, const uint16 rowOffset, const uint16 columnStart, const uint16 colOffset) {
 	uint16 rowEnd = rowStart + rowOffset;
 	if (rowEnd > *rowCount) {
 		rowEnd = *rowCount;
@@ -273,70 +271,184 @@ void removeBlock(int*** matrix, uint16* rowCount, uint16** colCount, uint16 rowS
 	int rowChanges = rowStart;
 	int i = 0;
 	for (i = rowStart; rowChanges < rowEnd; i++, rowChanges++) {
-		uint16 curColLength = *(*colCount + i);
-		if (columnStart >= curColLength) {
+		uint16 curColCount = *(*colCount + i);
+		if (columnStart >= curColCount) {
 			continue;
 		}
 		int columnEnd = columnStart + colOffset;
-		if (columnEnd > curColLength) {
-			columnEnd = curColLength;
+		if (columnEnd > curColCount) {
+			columnEnd = curColCount;
 		}
 		int removedColsCount = columnEnd - columnStart;
-		if (curColLength <= removedColsCount) {
+		if (curColCount <= removedColsCount) {
 			removeRowAt(matrix, rowCount, colCount, i);
 			i--;
 			continue;
 		}
 		// int* newRow = *(matrix + i);
-		shiftLeftArray(*(*matrix + i), columnStart, curColLength, removedColsCount);
-		// *(*matrix + i) = realloc(*matrix, (*rowCount - 1) * sizeof(**matrix));
-		*(*colCount + i) = curColLength - removedColsCount;
+		shiftLeftArray(*(*matrix + i), columnStart, curColCount, removedColsCount);
+		*(*matrix + i) = realloc(*(*matrix + i), (curColCount - removedColsCount) * sizeof(**matrix));
+		*(*colCount + i) = curColCount - removedColsCount;
 
 	}
-	// for ()
 }
 
-int main()
-{
-	char* opStr = malloc(4 * sizeof(char));
+void removeLastColumn(int*** matrix, uint16* const rowCount, uint16** colCount) {
+	uint16 rowStart = 0;
+	uint16 rowOffset = *rowCount;
 
+	uint16 rowEnd = rowStart + rowOffset;
+	if (rowEnd > *rowCount) {
+		rowEnd = *rowCount;
+	}
+	int rowChanges = rowStart;
+	int i = 0;
+	for (i = rowStart; rowChanges < rowEnd; i++, rowChanges++) {
+		uint16 curColCount = *(*colCount + i);
+
+		if (curColCount <= 1) {
+			removeRowAt(matrix, rowCount, colCount, i);
+			i--;
+			continue;
+		}
+		shiftLeftArray(*(*matrix + i), curColCount - 1, curColCount, 1);
+		*(*matrix + i) = realloc(*(*matrix + i), (curColCount - 1) * sizeof(**matrix));
+		*(*colCount + i) = curColCount - 1;
+	}
+}
+void scanemptyRows(uint16* const rowCount, uint16** const colCount, const char* OP) {
+	int i = 0;
+	for (i = 0; i < *rowCount; i++) {
+		if (*(*colCount + i) == 0) {
+			printf("%s caused illegal state\n", OP);
+			return;
+		}
+	}
+}
+
+void switchRows(int*** matrix, uint16* const rowCount, uint16** colCount, const uint16 rowA, const uint16 rowB) {
+	if (rowA >= *rowCount || rowB >= *rowCount) {
+		return;
+	}
+	int* tmp = *(*matrix + rowA);
+	*(*matrix + rowA) = *(*matrix + rowB);
+	*(*matrix + rowB) = tmp;
+
+	uint16 tmp1 = *(*colCount + rowA);
+	*(*colCount + rowA) = *(*colCount + rowB);
+	*(*colCount + rowB) = tmp1;
+}
+void switchCols(int*** matrix, uint16* const rowCount, uint16** colCount, const uint16 colA, const uint16 colB) {
+	int i = 0;
+	for (i = 0; i < *rowCount; i++) {
+		uint16 curColCount = *(*colCount + i);
+		if (colA < curColCount && colB < curColCount) {
+			int tmp = *(*(*matrix + i) + colA);
+			*(*(*matrix + i) + colA) = *(*(*matrix + i) + colB);
+			*(*(*matrix + i) + colB) = tmp;
+		}
+	}
+}
+
+int bigEndianInt(const int num) {
+	return ((num >> 24) & 0xff) | ((num << 8) & 0xff0000) | ((num >> 8) & 0xff00) | ((num << 24) & 0xff000000);
+}
+uint16 bigEndianUS(const uint16 num) {
+	return (num >> 8) | (num << 8);
+}
+
+void writeToFile(int*** matrix, uint16* const rowCount, uint16** rowWidth, const char* fileName) {
+	FILE* destFile = fopen(fileName, "wb");
+	fprintf(destFile, "%hu\n", *rowCount);
+	int i = 0;
+	for (i = 0; i < *rowCount; i++) {
+		uint16 curRowWidth = bigEndianUS(*(*rowWidth + i));
+		fwrite(&curRowWidth, sizeof(uint16), 1, destFile);
+		curRowWidth = *(*rowWidth + i);
+		int j = 0;
+		for (j = 0; j < curRowWidth; j++) {
+			int curValue = bigEndianInt(*(*(*matrix + i) + j));
+			// int element = *(*(*matrix + i) + j);
+			// int tmp = 0;
+			// tmp = element >> 24;
+			// fwrite(&tmp, 1, 1, destFile);
+			// tmp = (element >> 16) & 0xff;
+			// fwrite(&tmp, 1, 1, destFile);
+			// tmp = (element >> 8) & 0xff;
+			// fwrite(&tmp, 1, 1, destFile);
+			// tmp = (element) & 0xff;
+			// fwrite(&tmp, 1, 1, destFile);
+			fwrite(&curValue, sizeof(int), 1, destFile);
+		}
+	}
+	fclose(destFile);
+}
+void readFromFile(int*** matrix, uint16* const rowCount, uint16** colCount, const char* fileName) {
+	FILE* sourceFile = fopen(fileName, "rb");
+	cleanAll(matrix, rowCount, colCount);
+	uint16 newRowCount = 0;
+	fscanf(sourceFile, "%hu\n", &newRowCount);
+	int i = 0;
+	for (i = 0; i < newRowCount; i++) {
+		uint16 curRowWidth = 0;
+		fread(&curRowWidth, sizeof(uint16), 1, sourceFile);
+		curRowWidth = bigEndianUS(curRowWidth);
+		int j = 0;
+		int* newRow = malloc(curRowWidth * sizeof(newRow));
+		for (j = 0; j < curRowWidth; j++) {
+			int curValue = 0;
+			fread(&curValue, sizeof(int), 1, sourceFile);
+			curValue = bigEndianInt(curValue);
+			// unsigned char tmp = 0;
+			// int curValue = 0;
+			// fread(&tmp, 1, 1, sourceFile);
+			// curValue |= tmp << 24;
+			// fread(&tmp, 1, 1, sourceFile);
+			// curValue |= tmp << 16;
+			// fread(&tmp, 1, 1, sourceFile);
+			// curValue |= tmp << 8;
+			// fread(&tmp, 1, 1, sourceFile);
+			// curValue |= tmp;
+			* (newRow + j) = curValue;
+		}
+		insertRowBeforeFromArr(matrix, rowCount, colCount, curRowWidth, *rowCount, &newRow);
+		free(newRow);
+	}
+	fclose(sourceFile);
+}
+
+int main() {
+	char* opStr = malloc(4 * sizeof(*opStr));
 
 	int** matrix = nullptr;							// Master array, contatins pointers to arrays of variable size
-	unsigned short int  rowCount = 0;				// Master Array length a.k.a number of rows
-	unsigned short int* colCount = nullptr;		// Array of row lengths a.k.a column count for each row
+	uint16  rowCount = 0;				// length a.k.a number of rows
+	uint16* colCount = nullptr;			// Array of row lengths a.k.a column count for each row
 
-	Instruction OP;
+	Operation OP;
 	while (OP != END) {
+		// scanemptyRows(&rowCount, &colCount, opStr);
 		scanf("%s", opStr);
 		*(opStr + 3) = '\0';
 		OP = opParse(opStr);
-		uint16 rowOffset = 0;
-		uint16 colOffset = 0;
+		uint16 rowOStart = 0;
+		uint16 colStart = 0;
 		uint16 blockHeight = 0;
 		uint16 blockWidth = 0;
 
-		//  [x] Isb
-		// 	[x] Ibr
-		// 	[ ] Rmb
-		// 	[x] Swr
-		// 	[x] Swc
-		// 	[ ] Pliki
 
 		switch (OP) {
 			case AFR: {
 				//printf("hello AFR\n");
-				uint16 newRowWidth = 0;
-				scanf("%hu", &newRowWidth);
-				insertRowBefore(&matrix, &rowCount, &colCount, newRowWidth, 0);
+				scanf("%hu", &blockWidth);
 
+				insertRowBefore(&matrix, &rowCount, &colCount, blockWidth, 0);
 				break;
 			}
 			case ALR: {
 				//printf("hello ALR\n");
+				scanf(" %hu", &blockWidth);
 
-				uint16 newRowWidth = 0;
-				scanf(" %hu", &newRowWidth);
-				insertRowBefore(&matrix, &rowCount, &colCount, newRowWidth, rowCount);
+				insertRowBefore(&matrix, &rowCount, &colCount, blockWidth, rowCount);
 				break;
 			}
 			case AFC: {
@@ -354,54 +466,45 @@ int main()
 			}
 			case IBR: {
 				//printf("hello IBR\n");
-				scanf(" %hu %hu", &rowOffset, &blockWidth);
-				if (rowOffset >= rowCount) {
+				scanf(" %hu %hu", &rowOStart, &blockWidth);
+				if (rowOStart >= rowCount) {
 					skipLine(blockWidth);
 					break;
 				}
 
-				insertRowBefore(&matrix, &rowCount, &colCount, blockWidth, rowOffset);
+				insertRowBefore(&matrix, &rowCount, &colCount, blockWidth, rowOStart);
 				break;
 			}
 			case IAR: {
 				//printf("hello IAR\n");
-				scanf(" %hu %hu", &rowOffset, &blockWidth);
-				if (rowOffset >= rowCount) {
+				scanf(" %hu %hu", &rowOStart, &blockWidth);
+				if (rowOStart >= rowCount) {
 					skipLine(blockWidth);
 					break;
 				}
 
-				insertRowBefore(&matrix, &rowCount, &colCount, blockWidth, rowOffset + 1);
+				insertRowBefore(&matrix, &rowCount, &colCount, blockWidth, rowOStart + 1);
 				break;
 			}
 			case IBC: {
 				//printf("hello IBC\n");
-				scanf(" %hu %hu", &colOffset, &blockHeight);
-				insertBlock(&matrix, &rowCount, &colCount, 0, colOffset, blockHeight, 1);
+				scanf(" %hu %hu", &colStart, &blockHeight);
+				insertBlock(&matrix, &rowCount, &colCount, 0, colStart, blockHeight, 1);
 				break;
 			}
 			case IAC: {
 				//printf("hello IAC\n");
-				scanf(" %hu %hu", &colOffset, &blockHeight);
-				insertBlock(&matrix, &rowCount, &colCount, 0, colOffset + 1, blockHeight, 1);
+				scanf(" %hu %hu", &colStart, &blockHeight);
+				insertBlock(&matrix, &rowCount, &colCount, 0, colStart + 1, blockHeight, 1);
 				break;
 			}
 			case SWR: {
 				//printf("hello SWR\n");
 				uint16 rowA;
 				uint16 rowB;
+
 				scanf(" %hu %hu", &rowA, &rowB);
-				if (rowA >= rowCount || rowB >= rowCount) {
-					break;
-				}
-				int* tmp = *(matrix + rowA);
-				*(matrix + rowA) = *(matrix + rowB);
-				*(matrix + rowB) = tmp;
-
-				uint16 tmp1 = *(colCount + rowA);
-				*(colCount + rowA) = *(colCount + rowB);
-				*(colCount + rowB) = tmp1;
-
+				switchRows(&matrix, &rowCount, &colCount, rowA, rowB);
 				break;
 			}
 			case SWC: {
@@ -410,15 +513,7 @@ int main()
 				uint16 colB;
 
 				scanf(" %hu %hu", &colA, &colB);
-				int i = 0;
-				for (i = 0; i < rowCount; i++) {
-					uint16 curColCount = *(colCount + i);
-					if (colA < curColCount && colB < curColCount) {
-						int tmp = *(*(matrix + i) + colA);
-						*(*(matrix + i) + colA) = *(*(matrix + i) + colB);
-						*(*(matrix + i) + colB) = tmp;
-					}
-				}
+				switchCols(&matrix, &rowCount, &colCount, colA, colB);
 				break;
 			}
 			case DFR: {
@@ -435,40 +530,56 @@ int main()
 				removeRowAt(&matrix, &rowCount, &colCount, rowCount - 1);
 				break;
 			}
+			case DFC: {
+				removeBlock(&matrix, &rowCount, &colCount, 0, rowCount, 0, 1);
+				break;
+			}
 			case DLC: {
 				//printf("hello DLC\n");
+				removeLastColumn(&matrix, &rowCount, &colCount);
 				break;
 			}
 			case RMR: {
 				//printf("hello RMR\n");
-				scanf(" %hu", &rowOffset);
-				removeRowAt(&matrix, &rowCount, &colCount, rowOffset);
+				scanf(" %hu", &rowOStart);
+				removeRowAt(&matrix, &rowCount, &colCount, rowOStart);
 				break;
 			}
 			case RMC: {
 				//printf("hello RMC\n");
+				scanf(" %hu", &colStart);
+				removeBlock(&matrix, &rowCount, &colCount, 0, rowCount, colStart, 1);
 				break;
 			}
 			case RMB: {
 				//printf("hello RMB\n");
-				scanf(" %hu %hu %hu %hu", &rowOffset, &colOffset, &blockHeight, &blockWidth);
-				removeBlock(&matrix, &rowCount, &colCount, rowOffset, blockHeight, colOffset, blockWidth);
+				scanf(" %hu %hu %hu %hu", &rowOStart, &blockHeight, &colStart, &blockWidth);
+
+				removeBlock(&matrix, &rowCount, &colCount, rowOStart, blockHeight, colStart, blockWidth);
 				break;
 			}
 			case ISB: {
 				//printf("hello ISB\n");
+				scanf(" %hu %hu %hu %hu", &rowOStart, &colStart, &blockHeight, &blockWidth);
 
-
-				scanf(" %hu %hu %hu %hu", &rowOffset, &colOffset, &blockHeight, &blockWidth);
-				insertBlock(&matrix, &rowCount, &colCount, rowOffset, colOffset, blockHeight, blockWidth);
+				insertBlock(&matrix, &rowCount, &colCount, rowOStart, colStart, blockHeight, blockWidth);
 				break;
 			}
 			case WRF: {
-				//printf("hello WRF\n");
+				char* fileName = malloc(16 * sizeof(fileName));
+				scanf(" %s", fileName);
+				writeToFile(&matrix, &rowCount, &colCount, fileName);
+				//printf("hello RDF\n");
+				free(fileName);
+				break;
 				break;
 			}
 			case RDF: {
+				char* fileName = malloc(16 * sizeof(fileName));
+				scanf(" %s", fileName);
+				readFromFile(&matrix, &rowCount, &colCount, fileName);
 				//printf("hello RDF\n");
+				free(fileName);
 				break;
 			}
 			case PRT: {
@@ -478,23 +589,12 @@ int main()
 			}
 			case END: {
 				cleanAll(&matrix, &rowCount, &colCount);
-				// if (rowCount == 0) {
-				// 	break;
-				// }
-				// int i = 0;
-				// for (i = 0; i < rowCount; i++) {
-				// 	free(*(matrix + i));
-				// }
-				// printf("%p\n", &rowCount);
-
-				// free(matrix);
-				// free(rowWidth);
-				// rowWidth = nullptr;
 				break;
 			}
 			case undefined:
 				break;
 		}
+
 	}
 	free(opStr);
 	return 0;
