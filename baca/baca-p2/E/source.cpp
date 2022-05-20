@@ -46,11 +46,10 @@ public:
 	void addFruitCount(const unsigned int);
 	void subFruitCount(const unsigned int);
 
-	Fruit* getPrev(void) const { return this->prev; };
-	Fruit* getNext(void) const { return this->next; };
+	Fruit* getPrev(void) { return this->prev; };
+	Fruit* getNext(void) { return this->next; };
 	void hookNext(Fruit* next) { this->next = next; };
 	void hookPrev(Fruit* prev) { this->prev = prev; };
-	void setBranchPointer(Branch* parent) { this-> parent = parent; };
 
 	void displayAll();
 
@@ -86,10 +85,9 @@ public:
 	void harvestBranch(unsigned int);
 	void cutBranch(unsigned int);
 	Fruit* getFruitPointer(unsigned int length);// Return fruit growing on distance of "length" from branch
-	Tree* getTreePointer(void) const { return this->parent; }
+	Tree* getTreePointer(void) { return this->parent; }
 
 	// Note Helpers
-	void setWeightTotal(unsigned int);
 	void addWeight(const unsigned int);
 	void subWeight(const unsigned int);
 	void addFruitCount(const unsigned int);
@@ -97,8 +95,8 @@ public:
 	void addBranchCount(const unsigned int);
 	void subBranchCount(const unsigned int);
 
-	Branch* getPrev(void) const { return this->prev; }
-	Branch* getNext(void) const { return this->next; }
+	Branch* getPrev(void) { return this->prev; }
+	Branch* getNext(void) { return this->next; }
 	void hookNext(Branch* next) { this->next = next; }
 	void hookPrev(Branch* prev) { this->prev = prev; }
 	void insertLastFruit(const unsigned int);
@@ -147,7 +145,6 @@ public:
 	// Note helpers
 	void addWeight(const unsigned int);
 	void subWeight(const unsigned int);
-	void setWeightTotal(unsigned int);
 	void addFruitCount(const unsigned int);
 	void subFruitCount(const unsigned int);
 	void addBranchCount(const unsigned int);
@@ -155,10 +152,8 @@ public:
 	void addTreeCount(const unsigned int);
 	void subTreeCount(const unsigned int);
 
-	Branch* getFirst(void) const { return this-> first; }
-	Branch* getLast(void) const { return this-> last; }
-	Tree* getPrev(void) const { return this->prev; }
-	Tree* getNext(void) const { return this->next; }
+	Tree* getPrev(void) { return this->prev; }
+	Tree* getNext(void) { return this->next; }
 	void hookNext(Tree* next) { this->next = next; }
 	void hookPrev(Tree* prev) { this->prev = prev; }
 	void insertLastBranch(const unsigned int);
@@ -418,7 +413,7 @@ void Branch::deleteFruit(Fruit* node) {
 
 	// this->subFruitCount(1);
 	delete node;
-	node = nullptr;
+	// node = nullptr;
 
 }
 
@@ -497,9 +492,6 @@ void Branch::subWeight(const unsigned int delta) {
 		return;
 	}
 	this->parent->subWeight(delta);
-}
-void Branch::setWeightTotal(unsigned int weight) {
-	this->weight = weight;
 }
 void Branch::addFruitCount(const unsigned int delta) {
 	this->fruitCount += delta;
@@ -737,12 +729,7 @@ void Tree::deleteBranch(Branch* node) {
 	Branch* prev = node->getPrev();
 	Branch* next = node->getNext();
 
-	if (node == this->first) {
-		this->first = nullptr;
-	}
-	if (node == this->last) {
-		this->last = nullptr;
-	}
+
 
 
 	if (prev == nullptr) {
@@ -759,7 +746,7 @@ void Tree::deleteBranch(Branch* node) {
 	}
 
 	delete node;
-	node = nullptr;
+	// node = nullptr;
 }
 void Tree::cutTree(unsigned int newHeight) {
 	this->height = newHeight;
@@ -865,7 +852,7 @@ void Garden::deleteTree(Tree* node) {
 	}
 
 	delete node;
-	node = nullptr;
+	// node = nullptr;
 }
 
 void Garden::addWeight(const unsigned int delta) {
@@ -1058,179 +1045,3 @@ void Branch::displayAll() {
 
 
 
-// int main() {
-
-// 	//testy na wycieki pamieci
-
-// 	Garden* GARDEN = new Garden();
-// 	GARDEN->plantTree();
-// 	GARDEN->plantTree();
-// 	GARDEN->plantTree();
-// 	GARDEN->plantTree();
-// 	GARDEN->extractTree(2);
-// 	GARDEN->displayAll();
-
-// 	GARDEN->plantTree();
-// 	GARDEN->growthGarden();
-// 	GARDEN->plantTree();
-// 	GARDEN->growthGarden();
-// 	GARDEN->plantTree();
-// 	GARDEN->growthGarden();
-// 	GARDEN->plantTree();
-// 	GARDEN->growthGarden();
-// 	GARDEN->plantTree();
-// 	GARDEN->plantTree();
-// 	GARDEN->growthGarden();
-// 	GARDEN->displayAll();
-
-// 	GARDEN->extractTree(3);
-// 	GARDEN->extractTree(3);
-// 	GARDEN->growthGarden();
-// 	GARDEN->growthGarden();
-// 	GARDEN->fadeGarden();
-// 	GARDEN->fadeGarden();
-// 	GARDEN->fadeGarden();
-// 	GARDEN->fadeGarden();
-// 	GARDEN->growthGarden();
-// 	GARDEN->growthGarden();
-// 	GARDEN->growthGarden();
-// 	GARDEN->displayAll();
-
-// 	GARDEN->harvestGarden(3);
-// 	GARDEN->cloneTree(3);
-// 	GARDEN->cloneTree(1);
-// 	GARDEN->cloneTree(8);
-// 	GARDEN->growthGarden();
-// 	GARDEN->growthGarden();
-// 	GARDEN->displayAll();
-
-// 	delete GARDEN;
-
-// 	Tree* TREE = new Tree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->displayAll();
-// 	std::cout << std::endl;
-
-// 	TREE->cutTree(3);
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->displayAll();
-
-// 	delete TREE;
-
-// }
-// int main() {
-// 	Garden* garden = new Garden();
-// 	garden->plantTree();
-// 	garden->plantTree();
-// 	garden->plantTree();
-// 	garden->plantTree();
-// 	garden->extractTree(2);
-// 	garden->plantTree();
-// 	garden->growthGarden();
-// 	garden->plantTree();
-// 	garden->growthGarden();
-// 	garden->plantTree();
-// 	garden->growthGarden();
-// 	garden->plantTree();
-// 	garden->growthGarden();
-// 	garden->plantTree();
-// 	garden->plantTree();
-// 	garden->growthGarden();
-// 	garden->extractTree(3);
-// 	garden->extractTree(3);
-// 	garden->displayAll();
-// 	garden->growthGarden();
-// 	garden->growthGarden();
-// 	garden->fadeGarden();
-// 	garden->fadeGarden();
-// 	garden->fadeGarden();
-// 	garden->fadeGarden();
-// 	garden->growthGarden();
-// 	garden->growthGarden();
-// 	garden->growthGarden();
-// 	garden->growthGarden();
-// 	garden->harvestGarden(3);
-// 	garden->cloneTree(3);
-// 	garden->cloneTree(1);
-// 	garden->cloneTree(8);
-// 	garden->displayAll();
-// 	garden->getTreePointer(3)->cutTree(1);
-// 	garden->getTreePointer(1)->cutTree(5);
-// 	garden->extractTree(3);
-// 	garden->harvestGarden(2);
-// 	garden->getTreePointer(2)->growthTree();
-// 	garden->getTreePointer(2)->growthTree();
-// 	garden->fadeGarden();
-// 	garden->displayAll();
-// 	delete garden;
-// }
-
-// int main() {
-// 	Tree* TREE = new Tree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->displayAll();
-
-// 	std::cout << "///////" << std::endl;
-
-// 	TREE->getBranchPointer(6)->fadeBranch();
-// 	TREE->getBranchPointer(6)->fadeBranch();
-// 	TREE->getBranchPointer(6)->fadeBranch();
-// 	TREE->getBranchPointer(6)->fadeBranch();
-// 	TREE->getBranchPointer(6)->fadeBranch();
-// 	TREE->displayAll();
-
-// 	std::cout << "///////" << std::endl;
-
-// 	TREE->cloneBranch(TREE->getBranchPointer(3));
-// 	TREE->displayAll();
-// 	delete TREE;
-// }
-
-
-// int main() {
-// 	Tree* TREE = new Tree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->growthTree();
-// 	TREE->displayAll();
-// 	std::cout << "///////" << std::endl << std::endl;
-// 	TREE->getBranchPointer(3)->fadeBranch();
-// 	TREE->getBranchPointer(3)->fadeBranch();
-// 	TREE->getBranchPointer(3)->fadeBranch();
-// 	TREE->getBranchPointer(3)->fadeBranch();
-// 	TREE->getBranchPointer(3)->fadeBranch();
-// 	TREE->getBranchPointer(3)->fadeBranch();
-// 	TREE->getBranchPointer(3)->fadeBranch();
-// 	TREE->displayAll();
-// 	std::cout << "///////" << std::endl << std::endl;
-// 	TREE->cloneBranch(
-// 		TREE->getBranchPointer(6)
-// 	);
-// 	TREE->displayAll();
-// 	delete TREE;
-// }
