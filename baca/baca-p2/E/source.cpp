@@ -1,7 +1,7 @@
 // Maksim Zdobnikau
 
 #include <iostream>
-#include <stddef.h>
+// #include <stddef.h>
 #define nullptr 0
 using namespace std;
 
@@ -793,9 +793,8 @@ void Tree:: cloneBranch(Branch* source) {
 			else {
 				this->last = newBranch;
 			}
-			if (curBranch != nullptr) {
-				delete curBranch;
-			}
+
+			delete curBranch;
 			curBranch = nullptr;
 			curBranch = newBranch;
 
@@ -1057,37 +1056,181 @@ void Branch::displayAll() {
 	}
 }
 
-int main() {
-	Tree* TREE = new Tree();
-	TREE->growthTree();
-	TREE->growthTree();
-	TREE->growthTree();
-	TREE->growthTree();
-	TREE->growthTree();
-	TREE->growthTree();
-	TREE->growthTree();
-	TREE->growthTree();
-	TREE->growthTree();
-	TREE->growthTree();
-	TREE->displayAll();
-	std::cout << "///////" << std::endl << std::endl;
-	TREE->getBranchPointer(3)->fadeBranch();
-	TREE->getBranchPointer(3)->fadeBranch();
-	TREE->getBranchPointer(3)->fadeBranch();
-	TREE->getBranchPointer(3)->fadeBranch();
-	TREE->getBranchPointer(3)->fadeBranch();
-	TREE->getBranchPointer(3)->fadeBranch();
-	TREE->getBranchPointer(3)->fadeBranch();
-	TREE->displayAll();
-	std::cout << "///////" << std::endl << std::endl;
-	TREE->cloneBranch(
-		TREE->getBranchPointer(6)
-	);
-	TREE->displayAll();
-	delete TREE;
-}
 
 
+// int main() {
+
+// 	//testy na wycieki pamieci
+
+// 	Garden* GARDEN = new Garden();
+// 	GARDEN->plantTree();
+// 	GARDEN->plantTree();
+// 	GARDEN->plantTree();
+// 	GARDEN->plantTree();
+// 	GARDEN->extractTree(2);
+// 	GARDEN->displayAll();
+
+// 	GARDEN->plantTree();
+// 	GARDEN->growthGarden();
+// 	GARDEN->plantTree();
+// 	GARDEN->growthGarden();
+// 	GARDEN->plantTree();
+// 	GARDEN->growthGarden();
+// 	GARDEN->plantTree();
+// 	GARDEN->growthGarden();
+// 	GARDEN->plantTree();
+// 	GARDEN->plantTree();
+// 	GARDEN->growthGarden();
+// 	GARDEN->displayAll();
+
+// 	GARDEN->extractTree(3);
+// 	GARDEN->extractTree(3);
+// 	GARDEN->growthGarden();
+// 	GARDEN->growthGarden();
+// 	GARDEN->fadeGarden();
+// 	GARDEN->fadeGarden();
+// 	GARDEN->fadeGarden();
+// 	GARDEN->fadeGarden();
+// 	GARDEN->growthGarden();
+// 	GARDEN->growthGarden();
+// 	GARDEN->growthGarden();
+// 	GARDEN->displayAll();
+
+// 	GARDEN->harvestGarden(3);
+// 	GARDEN->cloneTree(3);
+// 	GARDEN->cloneTree(1);
+// 	GARDEN->cloneTree(8);
+// 	GARDEN->growthGarden();
+// 	GARDEN->growthGarden();
+// 	GARDEN->displayAll();
+
+// 	delete GARDEN;
+
+// 	Tree* TREE = new Tree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->displayAll();
+// 	std::cout << std::endl;
+
+// 	TREE->cutTree(3);
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->displayAll();
+
+// 	delete TREE;
+
+// }
+// int main() {
+// 	Garden* garden = new Garden();
+// 	garden->plantTree();
+// 	garden->plantTree();
+// 	garden->plantTree();
+// 	garden->plantTree();
+// 	garden->extractTree(2);
+// 	garden->plantTree();
+// 	garden->growthGarden();
+// 	garden->plantTree();
+// 	garden->growthGarden();
+// 	garden->plantTree();
+// 	garden->growthGarden();
+// 	garden->plantTree();
+// 	garden->growthGarden();
+// 	garden->plantTree();
+// 	garden->plantTree();
+// 	garden->growthGarden();
+// 	garden->extractTree(3);
+// 	garden->extractTree(3);
+// 	garden->displayAll();
+// 	garden->growthGarden();
+// 	garden->growthGarden();
+// 	garden->fadeGarden();
+// 	garden->fadeGarden();
+// 	garden->fadeGarden();
+// 	garden->fadeGarden();
+// 	garden->growthGarden();
+// 	garden->growthGarden();
+// 	garden->growthGarden();
+// 	garden->growthGarden();
+// 	garden->harvestGarden(3);
+// 	garden->cloneTree(3);
+// 	garden->cloneTree(1);
+// 	garden->cloneTree(8);
+// 	garden->displayAll();
+// 	garden->getTreePointer(3)->cutTree(1);
+// 	garden->getTreePointer(1)->cutTree(5);
+// 	garden->extractTree(3);
+// 	garden->harvestGarden(2);
+// 	garden->getTreePointer(2)->growthTree();
+// 	garden->getTreePointer(2)->growthTree();
+// 	garden->fadeGarden();
+// 	garden->displayAll();
+// 	delete garden;
+// }
+
+// int main() {
+// 	Tree* TREE = new Tree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->displayAll();
+
+// 	std::cout << "///////" << std::endl;
+
+// 	TREE->getBranchPointer(6)->fadeBranch();
+// 	TREE->getBranchPointer(6)->fadeBranch();
+// 	TREE->getBranchPointer(6)->fadeBranch();
+// 	TREE->getBranchPointer(6)->fadeBranch();
+// 	TREE->getBranchPointer(6)->fadeBranch();
+// 	TREE->displayAll();
+
+// 	std::cout << "///////" << std::endl;
+
+// 	TREE->cloneBranch(TREE->getBranchPointer(3));
+// 	TREE->displayAll();
+// 	delete TREE;
+// }
 
 
-
+// int main() {
+// 	Tree* TREE = new Tree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->growthTree();
+// 	TREE->displayAll();
+// 	std::cout << "///////" << std::endl << std::endl;
+// 	TREE->getBranchPointer(3)->fadeBranch();
+// 	TREE->getBranchPointer(3)->fadeBranch();
+// 	TREE->getBranchPointer(3)->fadeBranch();
+// 	TREE->getBranchPointer(3)->fadeBranch();
+// 	TREE->getBranchPointer(3)->fadeBranch();
+// 	TREE->getBranchPointer(3)->fadeBranch();
+// 	TREE->getBranchPointer(3)->fadeBranch();
+// 	TREE->displayAll();
+// 	std::cout << "///////" << std::endl << std::endl;
+// 	TREE->cloneBranch(
+// 		TREE->getBranchPointer(6)
+// 	);
+// 	TREE->displayAll();
+// 	delete TREE;
+// }
