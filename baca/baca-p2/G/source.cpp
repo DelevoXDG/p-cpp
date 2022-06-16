@@ -52,23 +52,24 @@ namespace Helpers {
 		}
 		return ans;
 	}
+
 }
 
-struct frac {
+struct simpleFraction {
 public:
 	long long NUM;
 	long long den;
 
-	frac(const long long NOM, const long long den) :NUM(NOM), den(den) {
+	simpleFraction(const long long NOM, const long long den)
+		: NUM(NOM), den(den) {
 		this->simplify();
 	}
-	long long num() { return this->NUM; }
-	long long den() { return this->den; }
+
 private:
 	void simplify(void) {
 		long long gcd = Helpers::gcd(NUM, den);
-		NUM *= gcd;
-		den *= gcd;
+		NUM /= gcd;
+		den /= gcd;
 	}
 };
 
@@ -82,7 +83,6 @@ public:
 	Array(const Array&);
 	Array(const int, std::va_list&);
 	~Array();
-
 
 	void divideAllBy(const int);
 	long long& operator [] (const int&) const;
@@ -110,19 +110,23 @@ public:
 	POLYNOMIAL operator+(const POLYNOMIAL&);
 	POLYNOMIAL operator-(const POLYNOMIAL&);
 	POLYNOMIAL operator-();
+	POLYNOMIAL& operator+=(const int);
+	POLYNOMIAL& operator-=(const int);
 	POLYNOMIAL& operator*=(const int);
-	POLYNOMIAL operator*(const POLYNOMIAL&);
 	POLYNOMIAL& operator/=(const int);
+	POLYNOMIAL operator*(const POLYNOMIAL&);
 	POLYNOMIAL operator/(const POLYNOMIAL&);
 	POLYNOMIAL operator%(const POLYNOMIAL&);
 	POLYNOMIAL operator<<(int);
 	POLYNOMIAL operator>>(int);
-	POLYNOMIAL& operator=(const POLYNOMIAL&);
+	// POLYNOMIAL& operator=(const POLYNOMIAL&);
+	POLYNOMIAL& operator+=(const POLYNOMIAL&);
+	POLYNOMIAL& operator-=(const POLYNOMIAL&);
 	POLYNOMIAL& operator*=(const POLYNOMIAL&);
 	POLYNOMIAL& operator/=(const POLYNOMIAL&);
 	POLYNOMIAL& operator%=(const POLYNOMIAL&);
-	POLYNOMIAL& operator<<=(const POLYNOMIAL&);
-	POLYNOMIAL& operator>>=(const POLYNOMIAL&);
+	POLYNOMIAL& operator<<=(int);
+	POLYNOMIAL& operator>>=(int);
 	POLYNOMIAL& operator++();
 	POLYNOMIAL operator++(int);
 	POLYNOMIAL& operator--();
@@ -137,6 +141,9 @@ public:
 	friend std::istream& operator>>(std::istream&, POLYNOMIAL&);
 
 private:
+	POLYNOMIAL add(const POLYNOMIAL&);
+	POLYNOMIAL sub(const POLYNOMIAL&);
+	POLYNOMIAL mult(const POLYNOMIAL&);
 	bool isZero() const;
 	int deg() const;
 	int  getLength() const { return this->coef.getLength(); }
@@ -145,6 +152,7 @@ private:
 	void fillArrWithVaArgs(const int, std::va_list, int*);
 	void setLength(int length) { this->coef.setLength(length); }
 	int lead() const;
+	long long& operator[](const long long i) { return this->coef[i]; }
 };
 int POLYNOMIAL::overloaded = 0;
 
@@ -196,6 +204,7 @@ Array& Array::operator=(const Array& source) {
 	for (int i = 0; i < source.length; i++) {
 		array[i] = source[i];
 	}
+	return *this;
 }
 long long& Array::operator[] (const int& i) const {
 	if (i >= this->length) {
@@ -268,14 +277,15 @@ int POLYNOMIAL::lead() const {
 	}
 	return copy.coef[copy.deg()];
 }
+
 int POLYNOMIAL::deg() const {
 	POLYNOMIAL copy = (*this);
 	copy.removeTrailingZeroCoeffs();
-	return Helpers::min(copy.getLength() - 1, 0);
+	return Helpers::max(copy.getLength() - 1, 0);
 }
 void POLYNOMIAL::removeTrailingZeroCoeffs() {
 	int newLength = this->coef.getLength();
-	if (newLength == 0) {
+	if (newLength <= 1) {
 		return;
 	}
 	while (newLength > 1 && this->coef[newLength - 1] == 0) {
@@ -307,16 +317,16 @@ POLYNOMIAL::POLYNOMIAL(int degree, ...) {
 	if (degree < 0) {
 		degree = 0;
 	}
-	int length = degree + 1;
-	va_start(va_args, length);
-	this->coef = Array(length, va_args);
+	int size = degree + 1;
+	va_start(va_args, size);
+	this->coef = Array(size, va_args);
 	va_end(va_args);
 	this->simplify();
 }
 
 POLYNOMIAL::POLYNOMIAL(const POLYNOMIAL& source) {
-	this->coef = Array(source.coef);
-	this->simplify();
+	this->coef = source.coef;
+	// this->simplify();
 }
 
 void* POLYNOMIAL::operator new (size_t amount) {
@@ -327,6 +337,72 @@ void* POLYNOMIAL::operator new (size_t amount) {
 void POLYNOMIAL::operator delete (void* ptr) {
 	overloaded--;
 	::operator delete (ptr);
+}
+
+POLYNOMIAL POLYNOMIAL::add(const POLYNOMIAL& arg) {
+	POLYNOMIAL p = (*this);
+	POLYNOMIAL q = arg;
+	int sizeP = p.getLength();
+	int sizeQ = q.getLength();
+	int sizeRes = Helpers::max(sizeP, sizeQ);
+
+	POLYNOMIAL res = POLYNOMIAL();
+	res.setLength(sizeRes);
+	for (size_t i = 0; i < sizeRes; i++) {
+		res.coef[i] = 0;
+	}
+	for (size_t i = 0; i < sizeP; i++) {
+		// std::cout << p.coef[i] << std::endl;
+		res.coef[i] += p.coef[i];
+	}
+	for (size_t i = 0; i < sizeQ; i++) {
+		// std::cout << q.coef[i] << std::endl;
+		res.coef[i] += q.coef[i];
+	}
+	return res;
+}
+
+POLYNOMIAL POLYNOMIAL::sub(const POLYNOMIAL& arg) {
+	POLYNOMIAL p = (*this);
+	POLYNOMIAL q = arg;
+	int sizeP = p.getLength();
+	int sizeQ = q.getLength();
+	int sizeRes = Helpers::max(sizeP, sizeQ);
+
+	POLYNOMIAL res = POLYNOMIAL();
+	res.setLength(sizeRes);
+	for (size_t i = 0; i < sizeRes; i++) {
+		res.coef[i] = 0;
+	}
+	for (size_t i = 0; i < sizeP; i++) {
+		res.coef[i] += p.coef[i];
+	}
+	for (size_t i = 0; i < sizeQ; i++) {
+		res.coef[i] -= q.coef[i];
+	}
+	return res;
+}
+
+POLYNOMIAL POLYNOMIAL::mult(const POLYNOMIAL& arg) {
+	POLYNOMIAL p = (*this);
+	POLYNOMIAL q = arg;
+	int sizeP = p.getLength();
+	int sizeQ = q.getLength();
+
+	int newLength = sizeP + sizeQ - 1;
+	POLYNOMIAL res = POLYNOMIAL();
+	res.setLength(newLength);
+
+	for (size_t i = 0; i < newLength; i++) {
+		res.coef[i] = 0;
+	}
+	for (int i = 0; i < sizeP; i++) {
+		for (int j = 0; j < sizeQ; j++) {
+			res.coef[i + j] = this->coef[i] * q.coef[j];
+		}
+	}
+
+	return res;
 }
 
 POLYNOMIAL POLYNOMIAL::operator+(const POLYNOMIAL& arg) {
@@ -377,6 +453,8 @@ POLYNOMIAL POLYNOMIAL::operator-(const POLYNOMIAL& arg) {
 	return res;
 }
 
+
+
 POLYNOMIAL POLYNOMIAL::operator-() {
 	int length = this->getLength();
 	POLYNOMIAL res = POLYNOMIAL();
@@ -402,6 +480,19 @@ POLYNOMIAL& POLYNOMIAL::operator/=(const int scalar) {
 	}
 	return *this;
 }
+POLYNOMIAL& POLYNOMIAL::operator+=(const int scalar) {
+	for (int i = 0, N = this->getLength(); i < N; i++) {
+		this->coef[i] += scalar;
+	}
+	return *this;
+}
+POLYNOMIAL& POLYNOMIAL::operator-=(const int scalar) {
+	for (int i = 0, N = this->getLength(); i < N; i++) {
+		this->coef[i] += scalar;
+	}
+	return *this;
+}
+
 
 POLYNOMIAL POLYNOMIAL::operator*(const POLYNOMIAL& arg) {
 	POLYNOMIAL p = (*this);
@@ -426,145 +517,300 @@ POLYNOMIAL POLYNOMIAL::operator*(const POLYNOMIAL& arg) {
 
 	res.simplify();
 	return res;
-
 }
 
 POLYNOMIAL POLYNOMIAL::operator/(const POLYNOMIAL& arg) {
 	// [ ] TODO
 	POLYNOMIAL p = *this;
-	POLYNOMIAL q = arg;
+	POLYNOMIAL d = arg;
+	p.simplify();
+	d.simplify();
+	int sizeP = p.getLength();
+	int sizeQ = d.getLength();
+	if (d.isZero()) {
+		return POLYNOMIAL();
+	}
+	if (p.deg() < d.deg()) {
+		return POLYNOMIAL();
+	}
+	if (d.deg() == 0) {
+		return this->coef[0] < 0 ? -(*this) : (*this);
+	}
+	POLYNOMIAL q = POLYNOMIAL();
+	int sizeRes = (p.getLength() - d.getLength() + 1);
+	q.setLength(sizeRes);
+
+	POLYNOMIAL rem = p;
+
+	while (rem.isZero() == false && rem.deg() >= d.deg()) {
+		simpleFraction tmp = simpleFraction(rem.lead(), d.lead());
+		POLYNOMIAL t = POLYNOMIAL();
+		long long sizeT = rem.deg() - d.deg() + 1;
+		t.setLength(sizeT);
+		t.coef[sizeT - 1] = tmp.NUM;
+
+
+		q *= tmp.den;
+		rem *= tmp.den;
+		// std::cout << t << std::endl;
+		// std::cout << q << std::endl;
+		// std::cout << rem << std::endl;
+
+		// POLYNOMIAL poly();
+		// std::cout << poly << std::endl;
+		q = q.add(t);
+		// std::cout << q << std::endl;
+		q.removeTrailingZeroCoeffs();
+		// std::cout << q << std::endl;
+
+		rem = rem.sub(t.mult(d));
+		// std::cout << rem << std::endl;
+		rem.removeTrailingZeroCoeffs();
+		// std::cout << rem << std::endl;
+	}
+	q.simplify();
+	return q;
+}
+
+POLYNOMIAL POLYNOMIAL::operator%(const POLYNOMIAL& arg) {
+	POLYNOMIAL p = *this;
+	POLYNOMIAL d = arg;
+	p.simplify();
+	d.simplify();
+	int sizeP = p.getLength();
+	int sizeQ = d.getLength();
+	if (d.isZero()) {
+		return POLYNOMIAL();
+	}
+	if (p.deg() < d.deg()) {
+		return POLYNOMIAL();
+	}
+	if (d.deg() == 0) {
+		return this->coef[0] < 0 ? -(*this) : (*this);
+	}
+	POLYNOMIAL q = POLYNOMIAL();
+	int sizeRes = (p.getLength() - d.getLength() + 1);
+	q.setLength(sizeRes);
+
+	POLYNOMIAL rem = p;
+
+	while (rem.isZero() == false && rem.deg() >= d.deg()) {
+		simpleFraction tmp = simpleFraction(rem.lead(), d.lead());
+		POLYNOMIAL t = POLYNOMIAL();
+		long long sizeT = rem.deg() - d.deg() + 1;
+		t.setLength(sizeT);
+		t.coef[sizeT - 1] = tmp.NUM;
+
+
+		q *= tmp.den;
+		rem *= tmp.den;
+		q = q.add(t);
+		q.removeTrailingZeroCoeffs();
+
+		rem = rem.sub(t.mult(d));
+		rem.removeTrailingZeroCoeffs();
+	}
+	rem.simplify();
+	return rem;
+}
+
+POLYNOMIAL POLYNOMIAL::operator<<(int shift) {
+	if (shift < 0) {
+		return POLYNOMIAL();
+	}
+	if (shift > this->deg()) {
+		return POLYNOMIAL();
+	}
+	POLYNOMIAL res = *this;
+	res.simplify();
+	if (shift == 0) {
+		return res;
+	}
+
+	long long oldLength = this->getLength();
+	long long newLength = oldLength - shift;
+
+	for (long long i = 0; i < newLength; i++) {
+		res[i] = res[i + shift];
+	}
+	for (long long i = newLength; i < oldLength; i++) {
+		res[i] = 0;
+	}
+	res.simplify();
+	return res;
+}
+
+POLYNOMIAL POLYNOMIAL::operator>>(int shift) {
+	if (shift < 0) {
+		return POLYNOMIAL();
+	}
+	if (this -> isZero()) {
+		return POLYNOMIAL();
+	}
+	POLYNOMIAL res = *this;
+	res.simplify();
+	if (shift == 0) {
+		return res;
+	}
+	long long oldLength = this->getLength();
+	long long newLength = oldLength + shift;
+
+	res.setLength(newLength);
+
+	for (long long i = shift; i < newLength; i++) {
+		res[i] = res[i - shift];
+	}
+	for (long long i = 0; i < shift; i++) {
+		res[i] = 0;
+	}
+	res.simplify();
+	return res;
+}
+
+// POLYNOMIAL& POLYNOMIAL::operator=(const POLYNOMIAL&) {
+
+// }
+
+POLYNOMIAL& POLYNOMIAL::operator*=(const POLYNOMIAL& q) {
+	*this = *this * q;
+	return *this;
+}
+
+POLYNOMIAL& POLYNOMIAL::operator/=(const POLYNOMIAL& q) {
+	*this = *this / q;
+	return *this;
+}
+
+POLYNOMIAL& POLYNOMIAL::operator%=(const POLYNOMIAL& q) {
+	*this = *this % q;
+	return *this;
+}
+
+POLYNOMIAL& POLYNOMIAL::operator<<=(int shift) {
+	*this = *this << shift;
+	return *this;
+}
+
+POLYNOMIAL& POLYNOMIAL::operator>>=(int shift) {
+	*this = *this >> shift;
+	return *this;
+}
+
+POLYNOMIAL& POLYNOMIAL::operator++() {
+	this->simplify();
+	*this += 1;
+	this->simplify();
+	return *this;
+}
+
+POLYNOMIAL POLYNOMIAL::operator++(int) {
+	POLYNOMIAL res = *this;
+	*this += 1;
+
+	this->simplify();
+	res.simplify();
+	return res;
+}
+
+POLYNOMIAL& POLYNOMIAL::operator--() {
+	for (long long i = 0; i < this->getLength(); i++) {
+		this->coef[i] -= 1;
+	}
+	this->simplify();
+	return *this;
+}
+
+POLYNOMIAL POLYNOMIAL::operator--(int) {
+	POLYNOMIAL res = *this;
+	for (long long i = 0; i < this->getLength(); i++) {
+		this->coef[i] -= 1;
+	}
+	this->simplify();
+	res.simplify();
+	return res;
+}
+
+bool operator==(const POLYNOMIAL& w1, const POLYNOMIAL& w2) {
+	POLYNOMIAL p = w1;
+	POLYNOMIAL q = w2;
 	p.simplify();
 	q.simplify();
 	int sizeP = p.getLength();
 	int sizeQ = q.getLength();
-	if (q.isZero()) {
-		return POLYNOMIAL();
+	if (sizeP != sizeQ) {
+		return false;
 	}
-	if (p.deg() < q.deg()) {
-		return POLYNOMIAL();
+	for (long long i = sizeP - 1; i >= 0; i--) {
+		if (p[i] != q[i]) {
+			return false;
+		}
 	}
-	if (q.deg() == 0) {
-		return this->coef[0] < 0 ? -(*this) : (*this);
+	return true;
+}
+
+bool operator!=(const POLYNOMIAL& p, const POLYNOMIAL& q) {
+	return (p == q) == false;
+}
+
+bool operator<(const POLYNOMIAL& w1, const POLYNOMIAL& w2) {
+	POLYNOMIAL p = w1;
+	POLYNOMIAL q = w2;
+	p.simplify();
+	q.simplify();
+	int sizeP = p.getLength();
+	int sizeQ = q.getLength();
+	if (sizeP != sizeQ) {
+		return sizeP < sizeQ;
 	}
-	POLYNOMIAL res = POLYNOMIAL();
-	int sizeRes = (p.getLength() - q.getLength() + 1);
-	res.setLength(sizeRes);
-
-	POLYNOMIAL rem = p;
-
-	while (rem.isZero() == false && rem.deg() >= q.deg()) {
-		// int lcm = Helpers::lcm(q.lead(), rem.lead());
-		// int val = Helpers::abs(lcm / rem.lead());
-		// rem *= val;
-		// res *= val;
-		frac tmp = frac(rem.lead(), q.lead());
-		POLYNOMIAL t = POLYNOMIAL();
-		long long sizeT = rem.deg() - q.deg() + 1;
-		t.setLength(sizeT);
-		t.coef[sizeT - 1] = tmp.num();
-
-		q *= tmp.den;
-		rem *= tmp.den;
-
-		q = q + t;
-		rem = rem - (t * q);
+	for (long long i = sizeP - 1; i >= 0; i--) {
+		if (p[i] != q[i]) {
+			return p[i] < q[i];
+		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
+	return false;
 }
 
-POLYNOMIAL POLYNOMIAL::operator%(const POLYNOMIAL&) {
-
+bool operator<=(const POLYNOMIAL& p, const POLYNOMIAL& q) {
+	if (p != q) {
+		return p < q;
+	}
+	return true;
 }
 
-POLYNOMIAL POLYNOMIAL::operator<<(int) {
-
+bool operator>(const POLYNOMIAL& p, const POLYNOMIAL& q) {
+	return q < p;
 }
 
-POLYNOMIAL POLYNOMIAL::operator>>(int) {
-
+bool operator>=(const POLYNOMIAL& p, const POLYNOMIAL& q) {
+	return q <= p;
 }
 
-POLYNOMIAL& POLYNOMIAL::operator=(const POLYNOMIAL&) {
-
+std::ostream& operator<<(std::ostream& os, const POLYNOMIAL& p) {
+	POLYNOMIAL copy = p;
+	copy.simplify();
+	os << "( " << copy[0];
+	for (size_t i = 1; i < copy.getLength(); i++) {
+		os << ", " << copy[i];
+	}
+	os << " ) ";
+	return os;
 }
 
-POLYNOMIAL& POLYNOMIAL::operator*=(const POLYNOMIAL&) {
+std::istream& operator>>(std::istream& is, POLYNOMIAL& p) {
+	int deg = 0;
+	std::cin >> deg;
 
-}
+	p = POLYNOMIAL();
+	if (deg < 0) {
+		return;
+	}
+	p.setLength(deg + 1);
+	for (long long i = 0; i < deg + 1; i++) {
+		std::cin >> p[i];
+	}
+	p.simplify();
 
-POLYNOMIAL& POLYNOMIAL::operator/=(const POLYNOMIAL&) {
-
-}
-
-POLYNOMIAL& POLYNOMIAL::operator%=(const POLYNOMIAL&) {
-
-}
-
-POLYNOMIAL& POLYNOMIAL::operator<<=(const POLYNOMIAL&) {
-
-}
-
-POLYNOMIAL& POLYNOMIAL::operator>>=(const POLYNOMIAL&) {
-
-}
-
-POLYNOMIAL& POLYNOMIAL::operator++() {
-
-}
-
-POLYNOMIAL POLYNOMIAL::operator++(int) {
-
-}
-
-POLYNOMIAL& POLYNOMIAL::operator--() {
-
-}
-
-POLYNOMIAL POLYNOMIAL::operator--(int) {
-
-}
-
-bool operator==(const POLYNOMIAL&, const POLYNOMIAL&) {
-
-}
-
-bool operator!=(const POLYNOMIAL&, const POLYNOMIAL&) {
-
-}
-
-bool operator<(const POLYNOMIAL&, const POLYNOMIAL&) {
-
-}
-
-bool operator<=(const POLYNOMIAL&, const POLYNOMIAL&) {
-
-}
-
-bool operator>(const POLYNOMIAL&, const POLYNOMIAL&) {
-
-}
-
-bool operator>=(const POLYNOMIAL&, const POLYNOMIAL&) {
-
-}
-
-std::ostream& operator<<(std::ostream&, const POLYNOMIAL&) {
-
-}
-
-std::istream& operator>>(std::istream&, POLYNOMIAL&) {
-
+	return is;
 }
 
 
