@@ -4,94 +4,87 @@
 #include <cstdarg>
 
 #define nullptr 0
-
-// b / a = (0), a = ()
-// Heap buffer overflow
-// Int overflow
-// Multiply all
 // [ ] uncomment this 
 
 namespace Helpers {
-	int abs(const int A) {
+	long long  abs(const long long  A) {
 		return A < 0 ? -A : A;
 	}
-	int min(const int A, const int B) {
+	long long min(const long long A, const long long B) {
 		return A < B ? A : B;
 	}
-	int max(const int A, const int B) {
+	long long max(const long long A, const long long B) {
 		return A < B ? B : A;
 	}
-	int gcd(const int A, const int B) {
+	long long gcd(const long long A, const long long B) {
 		if (A == 0 || B == 0) {
 			return A == 0 ? B : A;
 		}
-		int num = abs(A);
-		int div = abs(B);
-		int rem = 0;
+		long long num = abs(A);
+		long long div = abs(B);
 
 		while (div != 0) {
-			rem = num % div;
+			long long rem = num % div;
 			num = div;
 			div = rem;
 		}
 		return num;
 	}
-	int lcm(const int A, const int B) {
-		int numA = abs(A);
-		int numB = abs(B);
-
-		return (numA * numB) / gcd(numA, numB);
-	}
-	int gcd(long long* arr, const int size) {
-		if (size == 0) {
+	long long gcd(long long* arr, const long long length) {
+		if (length == 0) {
 			return 1;
 		}
 		int ans = arr[0];
-		for (size_t i = 1; i < size && ans != 1; i++) {
+		for (long long i = 1; i < length && ans != 1; i++) {
 			ans = gcd(ans, arr[i]);
 		}
 		return ans;
 	}
-
 }
 
 struct simpleFraction {
 public:
-	long long NUM;
-	long long den;
+	long long numberer;
+	long long denominator;
 
-	simpleFraction(const long long NOM, const long long den)
-		: NUM(NOM), den(den) {
+	simpleFraction(const long long numberer, const long long den)
+		: numberer(numberer), denominator(den) {
 		this->simplify();
+	}
+	long long num() const {
+		return this->numberer;
+	}
+	long long den() const {
+		return this->denominator;
 	}
 
 private:
 	void simplify(void) {
-		long long gcd = Helpers::gcd(NUM, den);
-		NUM /= gcd;
-		den /= gcd;
+		long long gcd = Helpers::gcd(numberer, denominator);
+		numberer /= gcd;
+		denominator /= gcd;
 	}
 };
 
 struct Array {
 private:
 	long long* array;
-	int length;
+	long long length;
 public:
-	Array(const int = 0);
-	Array(int* const, const int);
+	Array(const long long = 0);
+	Array(long long* const, const long long);
 	Array(const Array&);
 	Array(const int, std::va_list&);
 	~Array();
 
-	void divideAllBy(const int);
-	long long& operator [] (const int&) const;
+	long long& operator [] (const long long&) const;
 	Array& operator =(const Array&);
 	int getLength() const { return this->length; }
-	long long* getArray() { return this->array; }
-	void setLength(int);
-	int gcd();
+	long long* getArray() const { return this->array; }
+	void setLength(const long long);
+	long long gcd();
 };
+
 class POLYNOMIAL {
 public:
 	static int overloaded;
@@ -110,10 +103,10 @@ public:
 	POLYNOMIAL operator+(const POLYNOMIAL&);
 	POLYNOMIAL operator-(const POLYNOMIAL&);
 	POLYNOMIAL operator-();
-	POLYNOMIAL& operator+=(const int);
-	POLYNOMIAL& operator-=(const int);
-	POLYNOMIAL& operator*=(const int);
-	POLYNOMIAL& operator/=(const int);
+	POLYNOMIAL& operator+=(const long long);
+	POLYNOMIAL& operator-=(const long long);
+	POLYNOMIAL& operator*=(const long long);
+	POLYNOMIAL& operator/=(const long long);
 	POLYNOMIAL operator*(const POLYNOMIAL&);
 	POLYNOMIAL operator/(const POLYNOMIAL&);
 	POLYNOMIAL operator%(const POLYNOMIAL&);
@@ -141,6 +134,7 @@ public:
 	friend std::istream& operator>>(std::istream&, POLYNOMIAL&);
 
 private:
+	// POLYNOMIAL div(const POLYNOMIAL&, POLYNOMIAL&, POLYNOMIAL&);
 	POLYNOMIAL add(const POLYNOMIAL&);
 	POLYNOMIAL sub(const POLYNOMIAL&);
 	POLYNOMIAL mult(const POLYNOMIAL&);
@@ -149,41 +143,51 @@ private:
 	int  getLength() const { return this->coef.getLength(); }
 	void simplify();
 	void removeTrailingZeroCoeffs();
-	void fillArrWithVaArgs(const int, std::va_list, int*);
 	void setLength(int length) { this->coef.setLength(length); }
 	int lead() const;
 	long long& operator[](const long long i) { return this->coef[i]; }
 };
-int POLYNOMIAL::overloaded = 0;
 
-Array::Array(const int length) : array(nullptr), length(length) {
+int POLYNOMIAL::overloaded = 0;
+// []
+
+Array::Array(const long long length) : array(nullptr), length(length) {
 	if (length <= 0) {
 		this->length = 0;
+		if (this->array != nullptr) {
+			delete[] this->array;
+		}
 		return;
 	}
 	this->array = new long long[length];
-	for (size_t i = 0; i < length; i++) {
+	for (long long i = 0; i < length; i++) {
 		this->array[i] = 0;
 	}
 }
-Array::Array(int* const arr, const int length) : array(nullptr), length(length) {
+
+Array::Array(long long* const arr, const long long length) : array(nullptr), length(length) {
 	if (length <= 0) {
 		this->length = 0;
+		if (this->array != nullptr) {
+			delete[] this->array;
+		}
 		return;
 	}
 
 	this->array = new long long[length];
-	for (size_t i = 0; i < length; i++) {
+	for (long long i = 0; i < length; i++) {
 		this->array[i] = arr[i];
 	}
 }
+
 Array::Array(const Array& source) {
 	this->length = source.length;
 	this->array = new long long[this->length];
-	for (size_t i = 0; i < source.length; i++) {
+	for (long long i = 0; i < source.length; i++) {
 		this->array[i] = source.array[i];
 	}
 }
+
 Array::~Array() {
 	if (this->array != NULL) {
 		delete[] this->array;
@@ -191,50 +195,51 @@ Array::~Array() {
 	this->array = NULL;
 	this->length = 0;
 }
-Array& Array::operator=(const Array& source) {
-	if (this == &source) {
-		return *this;
-	}
-	if (this->array != nullptr) {
-		delete[] this->array;
-	}
 
-	this->length = source.length;
-	this->array = new long long[source.length];
-	for (int i = 0; i < source.length; i++) {
-		array[i] = source[i];
+Array& Array::operator=(const Array& source) {
+	if (this != &source) {
+		if (this->array != nullptr) {
+			delete[] this->array;
+		}
+
+		this->length = source.length;
+		this->array = new long long[source.length];
+		for (long long i = 0; i < source.length; i++) {
+			array[i] = source[i];
+		}
 	}
 	return *this;
 }
-long long& Array::operator[] (const int& i) const {
+
+long long& Array::operator[] (const long long& i) const {
 	if (i >= this->length) {
 		throw std::out_of_range("Index out of bounds");
 	}
 	return this->array[i];
-}
-Array::Array(const int length, std::va_list& va_args) {
+}Array::Array(const int length, std::va_list& va_args) {
 	this->length = length;
 	this->array = new long long[length];
-	for (size_t i = 0; i < length; i++) {
+	for (long long i = 0; i < length; i++) {
 		array[i] = va_arg(va_args, int);
 	}
 }
-void Array::setLength(int length) {
+
+void Array::setLength(const long long length) {
 	if (length <= 0) {
+		this->length = 0;
 		if (this->array != nullptr) {
 			delete[] this->array;
 		}
-		array = nullptr;
-		this->length = 0;
+		this->array = nullptr;
 		return;
 	}
 
 	long long* newArr = new long long[length];
 	int toCopy = Helpers::min(this->length, length);
-	for (size_t i = 0; i < toCopy; i++) {
+	for (long long i = 0; i < toCopy; i++) {
 		newArr[i] = this->array[i];
 	}
-	for (size_t i = toCopy; i < length; i++) {
+	for (long long i = toCopy; i < length; i++) {
 		newArr[i] = 0;
 	}
 	if (this->array != nullptr) {
@@ -243,32 +248,17 @@ void Array::setLength(int length) {
 	this->array = newArr;
 	this->length = length;
 }
-int Array::gcd() {
+
+long long Array::gcd() {
 	return Helpers::gcd(this->array, this->length);
 }
-void Array::divideAllBy(const int num) {
-	if (num == 0) {
-		throw std::runtime_error("Division by zero");
-	}
-	if (num == 1) {
-		return;
-	}
-	for (size_t i = 0; i < this->length; i++) {
-		this->array[i] /= num;
-	}
-}
-
-void fillArrWithVaArgs(const int length, std::va_list va_args, int* dest) {
-	for (size_t i = 0; i < length; i++) {
-		dest[i] = va_arg(va_args, int);
-	}
-}
-
 bool POLYNOMIAL::isZero() const {
 	POLYNOMIAL copy = *this;
 	copy.removeTrailingZeroCoeffs();
-	return copy.deg() == 0 && copy.coef[0] == 0;
+	// return copy.deg() == 0 && copy.coef[0] == 0;
+	return copy == POLYNOMIAL();
 }
+
 int POLYNOMIAL::lead() const {
 	POLYNOMIAL copy = *this;
 	copy.removeTrailingZeroCoeffs();
@@ -283,15 +273,16 @@ int POLYNOMIAL::deg() const {
 	copy.removeTrailingZeroCoeffs();
 	return Helpers::max(copy.getLength() - 1, 0);
 }
+
 void POLYNOMIAL::removeTrailingZeroCoeffs() {
-	int newLength = this->coef.getLength();
-	if (newLength <= 1) {
+	int newLen = this->coef.getLength();
+	if (newLen <= 1) {
 		return;
 	}
-	while (newLength > 1 && this->coef[newLength - 1] == 0) {
-		newLength--;
+	while (newLen > 1 && this->coef[newLen - 1] == 0) {
+		newLen--;
 	}
-	this->coef.setLength(newLength);
+	this->coef.setLength(newLen);
 }
 
 void POLYNOMIAL::simplify() {
@@ -302,9 +293,11 @@ void POLYNOMIAL::simplify() {
 		this->operator/= (gcd);
 	}
 }
+
 POLYNOMIAL::POLYNOMIAL() {
 	this->coef = Array(1);
 }
+
 // POLYNOMIAL::POLYNOMIAL(POLYNOMIAL& dummy, int length) {
 // 	if (length < 1) {
 // 		length = 1;
@@ -312,14 +305,14 @@ POLYNOMIAL::POLYNOMIAL() {
 // 	this->coef = Array(length);
 // }
 
-POLYNOMIAL::POLYNOMIAL(int degree, ...) {
+POLYNOMIAL::POLYNOMIAL(int deg, ...) {
 	std::va_list va_args;
-	if (degree < 0) {
-		degree = 0;
+	if (deg < 0) {
+		deg = 0;
 	}
-	int size = degree + 1;
-	va_start(va_args, size);
-	this->coef = Array(size, va_args);
+	int length = deg + 1;
+	va_start(va_args, length);
+	this->coef = Array(length, va_args);
 	va_end(va_args);
 	this->simplify();
 }
@@ -342,20 +335,20 @@ void POLYNOMIAL::operator delete (void* ptr) {
 POLYNOMIAL POLYNOMIAL::add(const POLYNOMIAL& arg) {
 	POLYNOMIAL p = (*this);
 	POLYNOMIAL q = arg;
-	int sizeP = p.getLength();
-	int sizeQ = q.getLength();
-	int sizeRes = Helpers::max(sizeP, sizeQ);
+	long long lenP = p.getLength();
+	long long lenQ = q.getLength();
+	long long lenR = Helpers::max(lenP, lenQ);
 
 	POLYNOMIAL res = POLYNOMIAL();
-	res.setLength(sizeRes);
-	for (size_t i = 0; i < sizeRes; i++) {
+	res.setLength(lenR);
+	for (long long i = 0; i < lenR; i++) {
 		res.coef[i] = 0;
 	}
-	for (size_t i = 0; i < sizeP; i++) {
+	for (long long i = 0; i < lenP; i++) {
 		// std::cout << p.coef[i] << std::endl;
 		res.coef[i] += p.coef[i];
 	}
-	for (size_t i = 0; i < sizeQ; i++) {
+	for (long long i = 0; i < lenQ; i++) {
 		// std::cout << q.coef[i] << std::endl;
 		res.coef[i] += q.coef[i];
 	}
@@ -365,19 +358,19 @@ POLYNOMIAL POLYNOMIAL::add(const POLYNOMIAL& arg) {
 POLYNOMIAL POLYNOMIAL::sub(const POLYNOMIAL& arg) {
 	POLYNOMIAL p = (*this);
 	POLYNOMIAL q = arg;
-	int sizeP = p.getLength();
-	int sizeQ = q.getLength();
-	int sizeRes = Helpers::max(sizeP, sizeQ);
+	long long lenP = p.getLength();
+	long long lenQ = q.getLength();
+	long long lenR = Helpers::max(lenP, lenQ);
 
 	POLYNOMIAL res = POLYNOMIAL();
-	res.setLength(sizeRes);
-	for (size_t i = 0; i < sizeRes; i++) {
+	res.setLength(lenR);
+	for (long long i = 0; i < lenR; i++) {
 		res.coef[i] = 0;
 	}
-	for (size_t i = 0; i < sizeP; i++) {
+	for (long long i = 0; i < lenP; i++) {
 		res.coef[i] += p.coef[i];
 	}
-	for (size_t i = 0; i < sizeQ; i++) {
+	for (long long i = 0; i < lenQ; i++) {
 		res.coef[i] -= q.coef[i];
 	}
 	return res;
@@ -386,18 +379,17 @@ POLYNOMIAL POLYNOMIAL::sub(const POLYNOMIAL& arg) {
 POLYNOMIAL POLYNOMIAL::mult(const POLYNOMIAL& arg) {
 	POLYNOMIAL p = (*this);
 	POLYNOMIAL q = arg;
-	int sizeP = p.getLength();
-	int sizeQ = q.getLength();
-
-	int newLength = sizeP + sizeQ - 1;
+	long long lenP = p.getLength();
+	long long lenQ = q.getLength();
+	long long lenR = lenP + lenQ - 1;
 	POLYNOMIAL res = POLYNOMIAL();
-	res.setLength(newLength);
+	res.setLength(lenR);
 
-	for (size_t i = 0; i < newLength; i++) {
+	for (long long i = 0; i < lenR; i++) {
 		res.coef[i] = 0;
 	}
-	for (int i = 0; i < sizeP; i++) {
-		for (int j = 0; j < sizeQ; j++) {
+	for (long long i = 0; i < lenP; i++) {
+		for (long long j = 0; j < lenQ; j++) {
 			res.coef[i + j] = this->coef[i] * q.coef[j];
 		}
 	}
@@ -410,19 +402,19 @@ POLYNOMIAL POLYNOMIAL::operator+(const POLYNOMIAL& arg) {
 	POLYNOMIAL q = arg;
 	p.simplify();
 	q.simplify();
-	int sizeP = p.getLength();
-	int sizeQ = q.getLength();
-	int sizeRes = Helpers::max(sizeP, sizeQ);
+	long long lenP = p.getLength();
+	long long lenQ = q.getLength();
+	long long lenR = Helpers::max(lenP, lenQ);
 
 	POLYNOMIAL res = POLYNOMIAL();
-	res.setLength(sizeRes);
-	for (size_t i = 0; i < sizeRes; i++) {
+	res.setLength(lenR);
+	for (long long i = 0; i < lenR; i++) {
 		res.coef[i] = 0;
 	}
-	for (size_t i = 0; i < sizeP; i++) {
+	for (long long i = 0; i < lenP; i++) {
 		res.coef[i] += p.coef[i];
 	}
-	for (size_t i = 0; i < sizeQ; i++) {
+	for (long long i = 0; i < lenQ; i++) {
 		res.coef[i] += q.coef[i];
 	}
 	res.simplify();
@@ -434,83 +426,97 @@ POLYNOMIAL POLYNOMIAL::operator-(const POLYNOMIAL& arg) {
 	POLYNOMIAL q = arg;
 	p.simplify();
 	q.simplify();
-	int sizeP = p.getLength();
-	int sizeQ = q.getLength();
-	int sizeRes = Helpers::max(sizeP, sizeQ);
+	long long lenP = p.getLength();
+	long long lenQ = q.getLength();
+	long long lenR = Helpers::max(lenP, lenQ);
 
 	POLYNOMIAL res = POLYNOMIAL();
-	res.setLength(sizeRes);
-	for (size_t i = 0; i < sizeRes; i++) {
+	res.setLength(lenR);
+	for (long long i = 0; i < lenR; i++) {
 		res.coef[i] = 0;
 	}
-	for (size_t i = 0; i < sizeP; i++) {
+	for (long long i = 0; i < lenP; i++) {
 		res.coef[i] += p.coef[i];
 	}
-	for (size_t i = 0; i < sizeQ; i++) {
+	for (long long i = 0; i < lenQ; i++) {
 		res.coef[i] -= q.coef[i];
 	}
 	res.simplify();
 	return res;
 }
 
-
-
 POLYNOMIAL POLYNOMIAL::operator-() {
 	int length = this->getLength();
 	POLYNOMIAL res = POLYNOMIAL();
 	res.setLength(length);
 
-	for (size_t i = 0; i < length; i++) {
+	for (long long i = 0; i < length; i++) {
 		res.coef[i] = -this->coef[i];
 	}
 	res.simplify();
 	return res;
 }
 
-POLYNOMIAL& POLYNOMIAL::operator*=(const int scalar) {
-	for (int i = 0, N = this->getLength(); i < N; i++) {
+POLYNOMIAL& POLYNOMIAL::operator*=(const long long scalar) {
+	if (scalar == 1) {
+		return *this;
+	}
+	for (long long i = 0, N = this->getLength(); i < N; i++) {
 		this->coef[i] *= scalar;
 	}
 	return *this;
 }
 
-POLYNOMIAL& POLYNOMIAL::operator/=(const int scalar) {
-	for (int i = 0, N = this->getLength(); i < N; i++) {
+POLYNOMIAL& POLYNOMIAL::operator/=(const long long scalar) {
+	if (scalar == 0) {
+		throw std::runtime_error("Divison by zero");
+	}
+	if (scalar == 1) {
+		return *this;
+	}
+	for (long long i = 0, N = this->getLength(); i < N; i++) {
 		this->coef[i] /= scalar;
 	}
 	return *this;
 }
-POLYNOMIAL& POLYNOMIAL::operator+=(const int scalar) {
-	for (int i = 0, N = this->getLength(); i < N; i++) {
-		this->coef[i] += scalar;
+
+POLYNOMIAL& POLYNOMIAL::operator+=(const long long delta) {
+	if (delta == 0) {
+		return *this;
 	}
-	return *this;
-}
-POLYNOMIAL& POLYNOMIAL::operator-=(const int scalar) {
-	for (int i = 0, N = this->getLength(); i < N; i++) {
-		this->coef[i] += scalar;
+	for (long long i = 0, N = this->getLength(); i < N; i++) {
+		this->coef[i] += delta;
 	}
 	return *this;
 }
 
+POLYNOMIAL& POLYNOMIAL::operator-=(const long long delta) {
+	if (delta == 0) {
+		return *this;
+	}
+	for (long long i = 0, N = this->getLength(); i < N; i++) {
+		this->coef[i] += delta;
+	}
+	return *this;
+}
 
 POLYNOMIAL POLYNOMIAL::operator*(const POLYNOMIAL& arg) {
 	POLYNOMIAL p = (*this);
 	POLYNOMIAL q = arg;
 	p.simplify();
 	q.simplify();
-	int sizeP = p.getLength();
-	int sizeQ = q.getLength();
+	long long lenP = p.getLength();
+	long long lenQ = q.getLength();
+	long long  lenR = lenP + lenQ - 1;
 
-	int newLength = sizeP + sizeQ - 1;
 	POLYNOMIAL res = POLYNOMIAL();
-	res.setLength(newLength);
+	res.setLength(lenR);
 
-	for (size_t i = 0; i < newLength; i++) {
+	for (long long i = 0; i < lenR; i++) {
 		res.coef[i] = 0;
 	}
-	for (int i = 0; i < sizeP; i++) {
-		for (int j = 0; j < sizeQ; j++) {
+	for (long long i = 0; i < lenP; i++) {
+		for (long long j = 0; j < lenQ; j++) {
 			res.coef[i + j] = this->coef[i] * q.coef[j];
 		}
 	}
@@ -519,51 +525,46 @@ POLYNOMIAL POLYNOMIAL::operator*(const POLYNOMIAL& arg) {
 	return res;
 }
 
+// POLYNOMIAL POLYNOMIAL::div(const POLYNOMIAL& arg, POLYNOMIAL& res, POLYNOMIAL& r)
+
 POLYNOMIAL POLYNOMIAL::operator/(const POLYNOMIAL& arg) {
-	// [ ] TODO
 	POLYNOMIAL p = *this;
-	POLYNOMIAL d = arg;
+	POLYNOMIAL div = arg;
 	p.simplify();
-	d.simplify();
-	int sizeP = p.getLength();
-	int sizeQ = d.getLength();
-	if (d.isZero()) {
+	div.simplify();
+
+	if (div.isZero()) {
 		return POLYNOMIAL();
 	}
-	if (p.deg() < d.deg()) {
+	if (p.deg() < div.deg()) {
 		return POLYNOMIAL();
 	}
-	if (d.deg() == 0) {
+	if (div.deg() == 0) {
 		return this->coef[0] < 0 ? -(*this) : (*this);
 	}
 	POLYNOMIAL q = POLYNOMIAL();
-	int sizeRes = (p.getLength() - d.getLength() + 1);
-	q.setLength(sizeRes);
-
 	POLYNOMIAL rem = p;
 
-	while (rem.isZero() == false && rem.deg() >= d.deg()) {
-		simpleFraction tmp = simpleFraction(rem.lead(), d.lead());
+	while (rem.isZero() == false && rem.deg() >= div.deg()) {
+		simpleFraction tmp = simpleFraction(rem.lead(), div.lead());
+
 		POLYNOMIAL t = POLYNOMIAL();
-		long long sizeT = rem.deg() - d.deg() + 1;
-		t.setLength(sizeT);
-		t.coef[sizeT - 1] = tmp.NUM;
+		long long lenT = rem.deg() - div.deg() + 1;
+		t.setLength(lenT);
+		t.coef[lenT - 1] = tmp.num();
 
-
-		q *= tmp.den;
-		rem *= tmp.den;
+		q *= tmp.den();
+		rem *= tmp.den();
 		// std::cout << t << std::endl;
 		// std::cout << q << std::endl;
 		// std::cout << rem << std::endl;
 
-		// POLYNOMIAL poly();
-		// std::cout << poly << std::endl;
 		q = q.add(t);
 		// std::cout << q << std::endl;
 		q.removeTrailingZeroCoeffs();
 		// std::cout << q << std::endl;
 
-		rem = rem.sub(t.mult(d));
+		rem = rem.sub(t.mult(div));
 		// std::cout << rem << std::endl;
 		rem.removeTrailingZeroCoeffs();
 		// std::cout << rem << std::endl;
@@ -574,40 +575,36 @@ POLYNOMIAL POLYNOMIAL::operator/(const POLYNOMIAL& arg) {
 
 POLYNOMIAL POLYNOMIAL::operator%(const POLYNOMIAL& arg) {
 	POLYNOMIAL p = *this;
-	POLYNOMIAL d = arg;
+	POLYNOMIAL div = arg;
 	p.simplify();
-	d.simplify();
-	int sizeP = p.getLength();
-	int sizeQ = d.getLength();
-	if (d.isZero()) {
+	div.simplify();
+	if (div.isZero()) {
 		return POLYNOMIAL();
 	}
-	if (p.deg() < d.deg()) {
+	if (p.deg() < div.deg()) {
 		return POLYNOMIAL();
 	}
-	if (d.deg() == 0) {
+	if (div.deg() == 0) {
 		return this->coef[0] < 0 ? -(*this) : (*this);
 	}
 	POLYNOMIAL q = POLYNOMIAL();
-	int sizeRes = (p.getLength() - d.getLength() + 1);
-	q.setLength(sizeRes);
-
 	POLYNOMIAL rem = p;
+	while (rem.isZero() == false && rem.deg() >= div.deg()) {
 
-	while (rem.isZero() == false && rem.deg() >= d.deg()) {
-		simpleFraction tmp = simpleFraction(rem.lead(), d.lead());
+		simpleFraction tmp = simpleFraction(rem.lead(), div.lead());
+
 		POLYNOMIAL t = POLYNOMIAL();
-		long long sizeT = rem.deg() - d.deg() + 1;
-		t.setLength(sizeT);
-		t.coef[sizeT - 1] = tmp.NUM;
+		long long lenT = rem.deg() - div.deg() + 1;
+		t.setLength(lenT);
+		t.coef[lenT - 1] = tmp.num();
 
+		q *= tmp.den();
+		rem *= tmp.den();
 
-		q *= tmp.den;
-		rem *= tmp.den;
 		q = q.add(t);
 		q.removeTrailingZeroCoeffs();
 
-		rem = rem.sub(t.mult(d));
+		rem = rem.sub(t.mult(div));
 		rem.removeTrailingZeroCoeffs();
 	}
 	rem.simplify();
@@ -627,13 +624,13 @@ POLYNOMIAL POLYNOMIAL::operator<<(int shift) {
 		return res;
 	}
 
-	long long oldLength = this->getLength();
-	long long newLength = oldLength - shift;
+	long long oldLen = this->getLength();
+	long long newLen = oldLen - shift;
 
-	for (long long i = 0; i < newLength; i++) {
+	for (long long i = 0; i < newLen; i++) {
 		res[i] = res[i + shift];
 	}
-	for (long long i = newLength; i < oldLength; i++) {
+	for (long long i = newLen; i < oldLen; i++) {
 		res[i] = 0;
 	}
 	res.simplify();
@@ -652,12 +649,12 @@ POLYNOMIAL POLYNOMIAL::operator>>(int shift) {
 	if (shift == 0) {
 		return res;
 	}
-	long long oldLength = this->getLength();
-	long long newLength = oldLength + shift;
+	long long oldLen = this->getLength();
+	long long newLen = oldLen + shift;
 
-	res.setLength(newLength);
+	res.setLength(newLen);
 
-	for (long long i = shift; i < newLength; i++) {
+	for (long long i = shift; i < newLen; i++) {
 		res[i] = res[i - shift];
 	}
 	for (long long i = 0; i < shift; i++) {
@@ -704,29 +701,26 @@ POLYNOMIAL& POLYNOMIAL::operator++() {
 }
 
 POLYNOMIAL POLYNOMIAL::operator++(int) {
+	this->simplify();
 	POLYNOMIAL res = *this;
 	*this += 1;
-
 	this->simplify();
-	res.simplify();
 	return res;
 }
 
 POLYNOMIAL& POLYNOMIAL::operator--() {
-	for (long long i = 0; i < this->getLength(); i++) {
-		this->coef[i] -= 1;
-	}
+	this->simplify();
+	*this -= 1;
 	this->simplify();
 	return *this;
 }
 
 POLYNOMIAL POLYNOMIAL::operator--(int) {
-	POLYNOMIAL res = *this;
-	for (long long i = 0; i < this->getLength(); i++) {
-		this->coef[i] -= 1;
-	}
 	this->simplify();
-	res.simplify();
+	POLYNOMIAL res = *this;
+	*this -= 1;
+
+	this->simplify();
 	return res;
 }
 
@@ -735,12 +729,12 @@ bool operator==(const POLYNOMIAL& w1, const POLYNOMIAL& w2) {
 	POLYNOMIAL q = w2;
 	p.simplify();
 	q.simplify();
-	int sizeP = p.getLength();
-	int sizeQ = q.getLength();
-	if (sizeP != sizeQ) {
+	long long lenP = p.getLength();
+	long long lenQ = q.getLength();
+	if (lenP != lenQ) {
 		return false;
 	}
-	for (long long i = sizeP - 1; i >= 0; i--) {
+	for (long long i = lenP - 1; i >= 0; i--) {
 		if (p[i] != q[i]) {
 			return false;
 		}
@@ -757,12 +751,12 @@ bool operator<(const POLYNOMIAL& w1, const POLYNOMIAL& w2) {
 	POLYNOMIAL q = w2;
 	p.simplify();
 	q.simplify();
-	int sizeP = p.getLength();
-	int sizeQ = q.getLength();
-	if (sizeP != sizeQ) {
-		return sizeP < sizeQ;
+	long long lenP = p.getLength();
+	long long lenQ = q.getLength();
+	if (lenP != lenQ) {
+		return lenP < lenQ;
 	}
-	for (long long i = sizeP - 1; i >= 0; i--) {
+	for (long long i = lenP - 1; i >= 0; i--) {
 		if (p[i] != q[i]) {
 			return p[i] < q[i];
 		}
@@ -789,12 +783,13 @@ std::ostream& operator<<(std::ostream& os, const POLYNOMIAL& p) {
 	POLYNOMIAL copy = p;
 	copy.simplify();
 	os << "( " << copy[0];
-	for (size_t i = 1; i < copy.getLength(); i++) {
+	for (long long i = 1; i < copy.getLength(); i++) {
 		os << ", " << copy[i];
 	}
 	os << " ) ";
 	return os;
 }
+
 
 std::istream& operator>>(std::istream& is, POLYNOMIAL& p) {
 	int deg = 0;
@@ -802,12 +797,17 @@ std::istream& operator>>(std::istream& is, POLYNOMIAL& p) {
 
 	p = POLYNOMIAL();
 	if (deg < 0) {
-		return;
+		for (long long i = 0; i < deg; i++) {
+			int dummy = 0;
+			std::cin >> dummy;
+		}
+		return is;
 	}
 	p.setLength(deg + 1);
 	for (long long i = 0; i < deg + 1; i++) {
 		std::cin >> p[i];
 	}
+
 	p.simplify();
 
 	return is;
