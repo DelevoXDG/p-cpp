@@ -61,7 +61,6 @@ public:
 	void Clear_Rope(LinkedList<Rope>*);
 	void Clear_All();
 	Node<T>* Get_Node(T);
-
 };
 
 struct RopeID {
@@ -80,7 +79,6 @@ public:
 	bool operator != (const RopeID&);
 	bool operator <  (const RopeID&);
 };
-
 struct Connection {
 public:
 	RopeID _dest_rope_id;
@@ -117,10 +115,7 @@ public:
 	void Add_Link_To(const RopeID, const unsigned short int);
 	void Remove_Link_To(const RopeID, const unsigned short int);
 	void Remove_Links();
-
 };
-
-
 struct Rope {
 public:
 	RopeID _id;
@@ -299,6 +294,7 @@ void LinkedList<T>::Remove(T removedData) {
 		prev = cur_node;
 		cur_node = cur_node->_next;
 	}
+
 }
 template <>
 void LinkedList<Rope>::Remove_Backlinks_To_Bead(const RopeID rope_id, const unsigned short int bead_id) {
@@ -354,7 +350,6 @@ void LinkedList<Rope>::Clear_All() {
 	}
 }
 
-
 int main(int argc, const char** argv)
 {
 	char 				OP = 0;
@@ -363,176 +358,175 @@ int main(int argc, const char** argv)
 	while (OP != 'F') {
 		cin >> OP;
 		switch (OP) {
-		case 'S': {
-			char sn0 = 0;
-			char sn1 = 0;
-			char sn2 = 0;
+			case 'S': {
+				char sn0 = 0;
+				char sn1 = 0;
+				char sn2 = 0;
 
-			cin >> sn0 >> sn1 >> sn2;	// Rope ID
+				cin >> sn0 >> sn1 >> sn2;	// Rope ID
 
-			All_Ropes.Insert(Rope(sn0, sn1, sn2));
+				All_Ropes.Insert(Rope(sn0, sn1, sn2));
 
-			break;
-		}
-		case 'B': {
-			unsigned short int kr = 0;
-			char sn0 = 0;
-			char sn1 = 0;
-			char sn2 = 0;
-
-			cin >> kr;					// Bead ID
-			cin >> sn0 >> sn1 >> sn2;	// Rope ID
-
-			RopeID sn(sn0, sn1, sn2);
-			Rope tmp_Rope(sn);			// Rope needed to be checked for presence in ropelist
-
-			Node<Rope>* dest_Rope = All_Ropes.Get_Node(tmp_Rope);
-
-			if (dest_Rope != nullptr) {
-				Bead new_bead(sn, kr);
-				dest_Rope->Insert_Data(new_bead);
+				break;
 			}
-			// else no destination rope to add to
+			case 'B': {
+				unsigned short int kr = 0;
+				char sn0 = 0;
+				char sn1 = 0;
+				char sn2 = 0;
 
-			break;
-		}
+				cin >> kr;					// Bead ID
+				cin >> sn0 >> sn1 >> sn2;	// Rope ID
 
-		case 'L': {
-			RopeID sS;
-			RopeID dS;
-			unsigned short int sK = 0;
-			unsigned short int dK = 0;
+				RopeID sn(sn0, sn1, sn2);
+				Rope tmp_Rope(sn);			// Rope needed to be checked for presence in ropelist
 
-			cin >> sK;
-			cin >> sS;
-			cin >> dK;
-			cin >> dS;
+				Node<Rope>* dest_Rope = All_Ropes.Get_Node(tmp_Rope);
 
-			Rope source_Rope(sS);
-			Bead source_Bead(sS, sK);
-			Rope dest_Rope(dS);
-			Bead dest_Bead(dS, dK);
+				if (dest_Rope != nullptr) {
+					Bead new_bead(sn, kr);
+					dest_Rope->Insert_Data(new_bead);
+				}
+				// else no destination rope to add to
 
-			Node<Rope>* SR_node = All_Ropes.Get_Node(source_Rope);
-			if (SR_node == nullptr) { break; }
-			Node<Bead>* SB_node = SR_node->_data._Bead_List.Get_Node(source_Bead);
-			if (SB_node == nullptr) { break; }
-			Node<Rope>* DR_node = All_Ropes.Get_Node(dest_Rope);
-			// if (DR_node == nullptr) { break; }
-			// Node<Bead>* DB_node = DR_node->_data._Bead_List.Get_Node(dest_Bead);
-			// if (DB_node == nullptr) { break; }
+				break;
+			}
 
-			SB_node->_data.Add_Link_To(dS, dK);
+			case 'L': {
+				RopeID sS;
+				RopeID dS;
+				unsigned short int sK = 0;
+				unsigned short int dK = 0;
 
-			break;
-		}
-		case 'U': {
-			RopeID sS;
-			RopeID dS;
-			unsigned short int sK = 0;
-			unsigned short int dK = 0;
+				cin >> sK;
+				cin >> sS;
+				cin >> dK;
+				cin >> dS;
 
-			cin >> sK;
-			cin >> sS;
-			cin >> dK;
-			cin >> dS;
+				Rope source_Rope(sS);
+				Bead source_Bead(sS, sK);
+				Rope dest_Rope(dS);
+				Bead dest_Bead(dS, dK);
 
-			Rope source_Rope(sS);
-			Bead source_Bead(sS, sK);
-			Rope dest_Rope(dS);
-			Bead dest_Bead(dS, dK);
+				Node<Rope>* SR_node = All_Ropes.Get_Node(source_Rope);
+				if (SR_node == nullptr) { break; }
+				Node<Bead>* SB_node = SR_node->_data._Bead_List.Get_Node(source_Bead);
+				if (SB_node == nullptr) { break; }
+				Node<Rope>* DR_node = All_Ropes.Get_Node(dest_Rope);
+				// if (DR_node == nullptr) { break; }
+				// Node<Bead>* DB_node = DR_node->_data._Bead_List.Get_Node(dest_Bead);
+				// if (DB_node == nullptr) { break; }
 
-			Node<Rope>* SR_node = All_Ropes.Get_Node(source_Rope);
-			if (SR_node == nullptr) { break; }
-			Node<Bead>* SB_node = SR_node->_data._Bead_List.Get_Node(source_Bead);
-			if (SB_node == nullptr) { break; }
-			// Node<Rope>* DR_node = All_Ropes.Get_Node(dest_Rope);
-			// if (DR_node == nullptr) { break; }
-			// Node<Bead>* DB_node = DR_node->_data._Bead_List.Get_Node(dest_Bead);
-			// if (DB_node == nullptr) { break; }
+				SB_node->_data.Add_Link_To(dS, dK);
 
-			SB_node->_data.Remove_Link_To(dS, dK);
+				break;
+			}
+			case 'U': {
+				RopeID sS;
+				RopeID dS;
+				unsigned short int sK = 0;
+				unsigned short int dK = 0;
 
-			break;
-		}
-		case 'D': {
-			unsigned short int kr = 0;
-			char sn0 = 0;
-			char sn1 = 0;
-			char sn2 = 0;
+				cin >> sK;
+				cin >> sS;
+				cin >> dK;
+				cin >> dS;
 
-			cin >> kr;					// Bead ID
-			cin >> sn0 >> sn1 >> sn2;	// Rope ID
+				Rope source_Rope(sS);
+				Bead source_Bead(sS, sK);
+				Rope dest_Rope(dS);
+				Bead dest_Bead(dS, dK);
 
-			RopeID sn(sn0, sn1, sn2);
-			Rope tmp_Rope(sn);
-			Bead tmp_Bead(sn, kr);
+				Node<Rope>* SR_node = All_Ropes.Get_Node(source_Rope);
+				if (SR_node == nullptr) { break; }
+				Node<Bead>* SB_node = SR_node->_data._Bead_List.Get_Node(source_Bead);
+				if (SB_node == nullptr) { break; }
+				// Node<Rope>* DR_node = All_Ropes.Get_Node(dest_Rope);
+				// if (DR_node == nullptr) { break; }
+				// Node<Bead>* DB_node = DR_node->_data._Bead_List.Get_Node(dest_Bead);
+				// if (DB_node == nullptr) { break; }
 
-			All_Ropes.Remove_Backlinks_To_Bead(sn, kr);
+				SB_node->_data.Remove_Link_To(dS, dK);
 
-			Node<Rope>* host_Rope = All_Ropes.Get_Node(tmp_Rope);
-			if (host_Rope == nullptr) { break; }
-			Node<Bead>* removed_Bead = host_Rope->_data._Bead_List.Get_Node(tmp_Bead);
-			if (removed_Bead == nullptr) { break; }
+				break;
+			}
+			case 'D': {
+				unsigned short int kr = 0;
+				char sn0 = 0;
+				char sn1 = 0;
+				char sn2 = 0;
 
-			removed_Bead->_data.Remove_Links();
-			host_Rope->_data._Bead_List.Remove(removed_Bead->_data);
+				cin >> kr;					// Bead ID
+				cin >> sn0 >> sn1 >> sn2;	// Rope ID
 
-			break;
-		}
-		case 'M': {
-			RopeID sS;
-			RopeID dS;
-			unsigned short int kr = 0;
+				RopeID sn(sn0, sn1, sn2);
+				Rope tmp_Rope(sn);
+				Bead tmp_Bead(sn, kr);
 
-			cin >> kr;
-			cin >> sS;
-			cin >> dS;
+				All_Ropes.Remove_Backlinks_To_Bead(sn, kr);
 
-			Rope source_Rope(sS);
-			Bead source_Bead(sS, kr);
-			Rope dest_Rope(dS);
+				Node<Rope>* host_Rope = All_Ropes.Get_Node(tmp_Rope);
+				if (host_Rope == nullptr) { break; }
+				Node<Bead>* removed_Bead = host_Rope->_data._Bead_List.Get_Node(tmp_Bead);
+				if (removed_Bead == nullptr) { break; }
 
-			Node<Rope>* SR_node = All_Ropes.Get_Node(source_Rope);
-			if (SR_node == nullptr) { break; }
-			Node<Bead>* SB_node = SR_node->_data._Bead_List.Get_Node(source_Bead);
-			if (SB_node == nullptr) { break; }
-			Node<Rope>* DR_node = All_Ropes.Get_Node(dest_Rope);
-			if (DR_node == nullptr) { break; }
+				removed_Bead->_data.Remove_Links();
+				host_Rope->_data._Bead_List.Remove(removed_Bead->_data);
 
-			Bead dest_Bead(SB_node->_data);
-			dest_Bead._host_Rope = dS;
-			SR_node->_data._Bead_List.Remove(source_Bead);
-			DR_node->_data._Bead_List.Insert(dest_Bead);
+				break;
+			}
+			case 'M': {
+				RopeID sS;
+				RopeID dS;
+				unsigned short int kr = 0;
 
-			break;
-		}
-		case 'R': {
-			RopeID sn;
-			cin >> sn;
-			Rope removed_Rope(sn);
-			Node<Rope>* removed_Node = All_Ropes.Get_Node(sn);
-			removed_Node->_data._Bead_List.Clear_Rope(&All_Ropes);
+				cin >> kr;
+				cin >> sS;
+				cin >> dS;
 
-			All_Ropes.Remove_Backlinks_To_Rope(sn);	// Case of deleting backlinks to removed elements
-			All_Ropes.Remove(removed_Node->_data);
+				Rope source_Rope(sS);
+				Bead source_Bead(sS, kr);
+				Rope dest_Rope(dS);
 
-			break;
-		}
-		case 'P': {
-			cout << All_Ropes;
+				Node<Rope>* SR_node = All_Ropes.Get_Node(source_Rope);
+				if (SR_node == nullptr) { break; }
+				Node<Bead>* SB_node = SR_node->_data._Bead_List.Get_Node(source_Bead);
+				if (SB_node == nullptr) { break; }
+				Node<Rope>* DR_node = All_Ropes.Get_Node(dest_Rope);
+				if (DR_node == nullptr) { break; }
 
-			break;
-		}
-		case 'F': {
-			All_Ropes.Clear_All();
+				Bead dest_Bead(SB_node->_data);
+				dest_Bead._host_Rope = dS;
+				SR_node->_data._Bead_List.Remove(source_Bead);
+				DR_node->_data._Bead_List.Insert(dest_Bead);
 
-			break;
-		}
+				break;
+			}
+			case 'R': {
+				RopeID sn;
+				cin >> sn;
+				Rope removed_Rope(sn);
+				Node<Rope>* removed_Node = All_Ropes.Get_Node(sn);
+				removed_Node->_data._Bead_List.Clear_Rope(&All_Ropes);
+
+				All_Ropes.Remove_Backlinks_To_Rope(sn);	// Case of deleting backlinks to removed elements
+				All_Ropes.Remove(removed_Node->_data);
+
+				break;
+			}
+			case 'P': {
+				cout << All_Ropes;
+
+				break;
+			}
+			case 'F': {
+				All_Ropes.Clear_All();
+
+				break;
+			}
 		}
 	}
 	// Leaks::Check_Leaks();
-	// L 111 AAA 322 KEK
 	// _MemoryCheck();
 
 	return 0;

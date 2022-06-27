@@ -3,10 +3,7 @@
 #include "iostream"
 #include "string"
 
-
 #define nullptr 0
-using std::cout;
-using std::string;
 
 class pNode;
 class pList;
@@ -62,14 +59,12 @@ public:
 
 	pNode* getFirst() { return this-> first; }
 	void setFirst(pNode* first) { this->first = first; }
-	pNode* at();
 	bool contains(PLAYER_CLASS*);
 	bool isEmpty();
 	unsigned int getSize();
 	pNode* getNode(PLAYER_CLASS*);
 	void insertFirst(PLAYER_CLASS*);
 	void deleteAfter(pNode*);
-	void insertLast(pNode*);
 	pNode* getMid(pNode*);
 	pNode* merge(pNode*, pNode*);
 	void mergeSort(pNode**);
@@ -87,8 +82,7 @@ protected:
 	unsigned int attackPoints;
 	unsigned int agilityPoints;
 public:
-	PLAYER_CLASS();
-	PLAYER_CLASS(unsigned int, unsigned int, unsigned int, unsigned int);
+	PLAYER_CLASS(unsigned int = 0, unsigned int = 0, unsigned int = 0, unsigned int = 0);
 
 	virtual unsigned int getRemainingHealth();
 	virtual unsigned int getMaxHP();
@@ -101,19 +95,18 @@ public:
 	virtual void printParams() = 0;
 	virtual unsigned int getDefense();
 	virtual unsigned int getArmor();
-	// virtual std::string toString();
-	virtual std::string getName() = 0;
+	virtual std::string getname() { return ""; };
 	virtual bool isDead();
 	virtual bool isAlive();
 
 	bool operator <= (PLAYER_CLASS&);
-private:
+protected:
 	virtual void die();
 };
 class CAESAR_CLASS {
 private:
-	unsigned int trialCount;
 public:
+	unsigned int trialCount;
 	unsigned int attackCount;
 
 public:
@@ -141,7 +134,7 @@ public:
 
 	void printParams();
 
-	std::string getName();
+	std::string getname();
 	unsigned int getArmor();
 	unsigned int getDefense();
 };
@@ -149,14 +142,13 @@ public:
 class BEAST_CLASS : public virtual PLAYER_CLASS {
 private:
 	std::string name;
-	bool isHuman;
 public:
 	BEAST_CLASS(std::string);
 
 	unsigned int getDamage();
 	void printParams();
 
-	std::string getName();
+	std::string getname();
 	unsigned int getArmor() { return 0; };
 	unsigned int getDefense();
 };
@@ -171,7 +163,7 @@ public:
 	void printParams();
 
 	bool isBeast();
-	std::string getName();
+	std::string getname();
 	unsigned int getArmor();
 	unsigned int getDefense();
 };
@@ -190,18 +182,18 @@ public:
 	unsigned int getRemainingHealth();
 	void takeDamage(unsigned int);
 	void printParams();
-	void die();
 	void cure();
 	void applyWinnerReward();
 
-	std::string getName();
+	std::string getname();
 	void removeDead();
 	unsigned int playerCount();
+private:
+
+	void die();
 };
 
 // SECTION LIST
-
-
 pNode::pNode(PLAYER_CLASS* data, pNode* next) :data(data), next(next) {
 }
 pList::pList() : first(nullptr), size(0) {
@@ -241,7 +233,6 @@ void pList::deleteAfter(pNode* prev) {
 	if (toDelete == nullptr) {
 		return;
 	}
-	// toDelete->setNext(nullptr);
 
 	delete toDelete;
 	this->size--;
@@ -268,7 +259,6 @@ pNode* pList::getNode(PLAYER_CLASS* data) {
 void pList::printList() {
 	pNode* curNode = this->first;
 	while (curNode != NULL) {
-		// cout += curNode->getData().toString() + "\n";
 		curNode->getData().printParams();
 		curNode = curNode->getNext();
 	}
@@ -324,9 +314,9 @@ void pList::mergeSort(pNode** root) {
 	if (cur->getNext() == nullptr) {
 		return;
 	}
-	if (cur->getNext() == cur) {
-		std::cout << "panic\n";
-	}
+	// if (cur->getNext() == cur) {
+	// 	std::cout << "panic\n";
+	// }
 
 	pNode* L = cur;
 	pNode* mid = getMid(cur);
@@ -346,10 +336,8 @@ unsigned int pList::getSize() {
 	return this->size;
 }
 // SECTION PLAYER
-PLAYER_CLASS::PLAYER_CLASS() : maxHP(0), HP(0), attackPoints(0), agilityPoints(0) {
-
-};
-PLAYER_CLASS::PLAYER_CLASS(unsigned int maxHP, unsigned int HP, unsigned int attackPoints, unsigned int agilityPoints) : maxHP(maxHP), HP(HP), attackPoints(attackPoints), agilityPoints(agilityPoints) {
+PLAYER_CLASS::PLAYER_CLASS(unsigned int maxHP, unsigned int HP, unsigned int attackPoints, unsigned int agilityPoints) :
+	maxHP(maxHP), HP(HP), attackPoints(attackPoints), agilityPoints(agilityPoints) {
 };
 unsigned int PLAYER_CLASS::getArmor() {
 	return 0;
@@ -404,18 +392,7 @@ void PLAYER_CLASS::die() {
 void PLAYER_CLASS::cure() {
 	this->HP = this->maxHP;
 }
-// std::string PLAYER_CLASS::toString() {
-// 	std::string str("");
-// 	str += this->getMaxHP() + ":";
-// 	str += this->getHP() + ":";
-// 	str += this->getRemainingHealth() + "%:";
-// 	str += this->getDamage() + ":";
-// 	str += this->getAgility();
-// 	return str;
-// }
-// void PLAYER_CLASS::printParams() {
-	// std::cout << this->toString() << "\n";
-// }
+
 // SECTION HUMAN
 HUMAN_CLASS::HUMAN_CLASS(std::string name) :
 	PLAYER_CLASS(200, 200, 30, 10),
@@ -428,15 +405,15 @@ unsigned int HUMAN_CLASS::getArmor() {
 unsigned int HUMAN_CLASS::getDefense() {
 	return this->getArmor() + this->getAgility();
 }
-std::string HUMAN_CLASS::getName() {
+std::string HUMAN_CLASS::getname() {
 	return this->name;
 }
-std::string BEAST_CLASS::getName() {
+std::string BEAST_CLASS::getname() {
 	return this->name;
 }
 bool PLAYER_CLASS::operator <= (PLAYER_CLASS& B) {
-	if (this->getName() != B.getName()) {
-		return this->getName() <= B.getName();
+	if (this->getname() != B.getname()) {
+		return this->getname() <= B.getname();
 	}
 	if (this->getMaxHP() != B.getMaxHP()) {
 		return this->getMaxHP() <= B.getMaxHP();
@@ -458,32 +435,15 @@ bool PLAYER_CLASS::operator <= (PLAYER_CLASS& B) {
 	}
 	return true;
 }
-// std::string HUMAN_CLASS::toString() {
-// 	std::string str("");
-// 	str += this->getName() + ":";
-// 	switch (this->getHP()) {
-// 		case 0: {
-// 			str += ":R.I.P.";
-// 			break;
-// 		}
-// 		default: {
-// 			str += this->PLAYER_CLASS::toString();
-// 			str += ":" + this->getArmor();
-// 			break;
-// 		}
-
-// 	}
-// 	return str;
-// }
 void HUMAN_CLASS::printParams() {
 	if (this->isDead()) {
-		std::cout << this->getName()
+		std::cout << this->getname()
 			<< ":R.I.P."
 			<< "\n";
 		return;
 	}
 
-	std::cout << this->getName() << ":" << std::flush
+	std::cout << this->getname() << ":" << std::flush
 		<< this->getMaxHP() << ":" << std::flush
 		<< this->getHP() << ":" << std::flush
 		<< this->getRemainingHealth() << "%:" << std::flush
@@ -509,30 +469,15 @@ unsigned int BEAST_CLASS::getDamage() {
 unsigned int BEAST_CLASS::getDefense() {
 	return this->getAgility() / 2;
 }
-// std::string BEAST_CLASS::toString() {
-// 	std::string str("");
-// 	str += this->getName() + ":";
-// 	switch (this->getHP()) {
-// 		case 0: {
-// 			str += ":R.I.P.";
-// 			break;
-// 		}
-// 		default: {
-// 			str += this->PLAYER_CLASS::toString();
-// 			break;
-// 		}
-// 	}
-// 	return str;
-// }
 void BEAST_CLASS::printParams() {
 	if (this->isDead()) {
-		std::cout << this->getName()
+		std::cout << this->getname()
 			<< ":R.I.P."
 			<< "\n";
 		return;
 	}
 
-	std::cout << this->getName() << ":"
+	std::cout << this->getname() << ":"
 		<< this->getMaxHP() << ":"
 		<< this->getHP() << ":"
 		<< this->getRemainingHealth() << "%:"
@@ -575,17 +520,11 @@ unsigned int BERSERKER_CLASS::getDefense() {
 	}
 	return this->HUMAN_CLASS::getDefense();
 }
-// std::string BERSERKER_CLASS::toString() {
-// 	if (this->isBeast()) {
-// 		return BEAST_CLASS::toString();
-// 	}
-// 	return this->HUMAN_CLASS::toString();
-// }
-std::string BERSERKER_CLASS::getName() {
+std::string BERSERKER_CLASS::getname() {
 	if (this->isBeast()) {
-		return this->BEAST_CLASS::getName();
+		return this->BEAST_CLASS::getname();
 	}
-	return this->HUMAN_CLASS::getName();
+	return this->HUMAN_CLASS::getname();
 }
 unsigned int BERSERKER_CLASS::getArmor() {
 	if (this->isBeast()) {
@@ -648,16 +587,12 @@ void SQUAD_CLASS::takeDamage(unsigned int damage) {
 	if (this->playerList.isEmpty()) {
 		return;
 	}
-	// pNode* prev = nullptr;
 	unsigned damageEach = damage / this->playerList.getSize();
 	for (pNode* cur = this->playerList.getFirst();
 	 cur; ) {
 		pNode* next = cur->getNext();
 		cur->getData().takeDamage(damageEach);
-		// if (cur->getData().isDead()) {
-		// 	this->playerList.deleteAfter(prev);
-		// }
-		// prev = cur;
+
 		cur = next;
 	}
 	this->removeDead();
@@ -677,16 +612,11 @@ unsigned int SQUAD_CLASS::getRemainingHealth() {
 	return maxHealthPercentage;
 }
 void SQUAD_CLASS::die() {
-	this->HP = 0;
-
-	// pNode* prev = nullptr;
+	// this->HP = 0;
 	for (pNode* cur = this->playerList.getFirst();
 	cur; ) {
 		pNode* next = cur->getNext();
 		cur->getData().die();
-		// playerList.deleteAfter(prev);
-
-		// prev = cur;
 		cur = next;
 	}
 	this->removeDead();
@@ -728,12 +658,12 @@ void SQUAD_CLASS::cure() {
 void SQUAD_CLASS::printParams() {
 	this->removeDead();
 	if (this->playerList.isEmpty()) {
-		std::cout << this->getName()
+		std::cout << this->getname()
 			<< ":nemo"
 			<< "\n";
 		return;
 	}
-	std::cout << this->getName() << ":"
+	std::cout << this->getname() << ":"
 		<< this->playerCount() << ":"
 		<< this->getRemainingHealth() << "%:"
 		<< this->getDamage() << ":"
@@ -747,10 +677,13 @@ void SQUAD_CLASS::printParams() {
 		cur->getData().printParams();
 	}
 }
-std::string SQUAD_CLASS::getName() {
+std::string SQUAD_CLASS::getname() {
 	return this->name;
 }
 	// SECTION CAESAR
+// CAESAR_CLASS::CAESAR_CLASS() :
+// 	trialCount(0), attackCount(0) {
+// }
 void CAESAR_CLASS::judgeDeathOfLife(PLAYER_CLASS* defendant) {
 	this->trialCount++;
 
@@ -763,6 +696,8 @@ void CAESAR_CLASS::judgeDeathOfLife(PLAYER_CLASS* defendant) {
 }
 ARENA_CLASS::ARENA_CLASS(CAESAR_CLASS* judge) :
 	judge(*judge) {
+	judge->attackCount = 0;
+	judge->trialCount = 0;
 }
 void ARENA_CLASS::fight(PLAYER_CLASS* A, PLAYER_CLASS* B) {
 	if (A->isDead()) {
@@ -779,13 +714,11 @@ void ARENA_CLASS::fight(PLAYER_CLASS* A, PLAYER_CLASS* B) {
 
 	A->printParams();
 	B->printParams();
-
-	int fightCount = 0;
-	for (fightCount = 0;
-	fightCount < 40
+	this->judge.attackCount = 0;
+	for (this->judge.attackCount = 0;
+	this->judge.attackCount < 40
 	&& A->getRemainingHealth() >= 10
-	&& B->getRemainingHealth() >= 10
-	; fightCount++) {
+	&& B->getRemainingHealth() >= 10; ) {
 		B ->takeDamage(A->getDamage());
 		B ->printParams();
 		this->judge.attackCount++;
@@ -817,143 +750,3 @@ void ARENA_CLASS::fight(PLAYER_CLASS* A, PLAYER_CLASS* B) {
 	B->printParams();
 	this->judge.attackCount = 0;
 }
-
-// int main() {
-// 	HUMAN_CLASS human1("warrior");
-// 	HUMAN_CLASS human2("warrior");
-// 	HUMAN_CLASS human3("warrior");
-// 	HUMAN_CLASS human4("warrior");
-// 	HUMAN_CLASS human5("warrior");
-// 	HUMAN_CLASS human6("warrior");
-// 	HUMAN_CLASS human7("warrior");
-// 	HUMAN_CLASS human8("warrior");
-// 	HUMAN_CLASS human9("awarrior");
-// 	HUMAN_CLASS human10("warrio");
-
-// 	SQUAD_CLASS avengers("avengers");
-// 	avengers.addPlayer(&human1);
-// 	avengers.addPlayer(&human2);
-// 	avengers.addPlayer(&human3);
-// 	avengers.addPlayer(&human4);
-// 	avengers.addPlayer(&human5);
-// 	avengers.addPlayer(&human6);
-// 	avengers.addPlayer(&human7);
-// 	avengers.addPlayer(&human8);
-// 	avengers.addPlayer(&human9);
-// 	avengers.addPlayer(&human10);
-
-// 	avengers.printParams();
-
-// 	human1.takeDamage(50);
-// 	human2.takeDamage(50);
-// 	human3.takeDamage(50);
-// 	human4.takeDamage(50);
-// 	human5.takeDamage(50);
-// 	human6.takeDamage(50);
-// 	human7.takeDamage(60);
-// 	human10.takeDamage(10);
-
-// 	avengers.printParams();
-
-// 	human1.applyWinnerReward();
-// 	human2.applyWinnerReward();
-// 	human3.applyWinnerReward();
-// 	human4.applyWinnerReward();
-
-// 	avengers.printParams();
-
-// 	BERSERKER_CLASS berserker1("warrior", "warrior");
-// 	BERSERKER_CLASS berserker2("warrior", "warrior");
-// 	BERSERKER_CLASS berserker3("warrior", "warrior");
-// 	BERSERKER_CLASS berserker4("warrior", "warrior");
-// 	BERSERKER_CLASS berserker5("warrior", "warrior");
-// 	BERSERKER_CLASS berserker6("warrior", "warrior");
-// 	BERSERKER_CLASS berserker7("warrior", "warrior");
-// 	BERSERKER_CLASS berserker8("warrior", "warrior");
-// 	BERSERKER_CLASS berserker9("warrior", "warrior");
-// 	BERSERKER_CLASS berserker10("warrior", "warrior");
-
-// 	avengers.addPlayer(&berserker1);
-// 	avengers.addPlayer(&berserker2);
-// 	avengers.addPlayer(&berserker3);
-// 	avengers.addPlayer(&berserker4);
-// 	avengers.addPlayer(&berserker5);
-// 	avengers.addPlayer(&berserker6);
-// 	avengers.addPlayer(&berserker7);
-// 	avengers.addPlayer(&berserker8);
-// 	avengers.addPlayer(&berserker9);
-// 	avengers.addPlayer(&berserker10);
-
-// 	avengers.printParams();
-
-// 	berserker1.takeDamage(190);
-// 	berserker2.takeDamage(190);
-// 	berserker3.takeDamage(195);
-// 	berserker4.takeDamage(170);
-// 	berserker5.takeDamage(175);
-// 	berserker6.takeDamage(10);
-// 	berserker10.takeDamage(10);
-
-// 	avengers.printParams();
-
-// 	berserker1.applyWinnerReward();
-// 	berserker2.applyWinnerReward();
-// 	berserker3.applyWinnerReward();
-// 	berserker4.applyWinnerReward();
-// 	berserker6.applyWinnerReward();
-// 	berserker7.applyWinnerReward();
-
-// 	avengers.printParams();
-
-// 	BEAST_CLASS beast1("warrior");
-// 	BEAST_CLASS beast2("warrior");
-// 	BEAST_CLASS beast3("warrior");
-// 	BEAST_CLASS beast4("warrior");
-// 	BEAST_CLASS beast5("warrior");
-// 	BEAST_CLASS beast6("warrior");
-// 	BEAST_CLASS beast7("warrior");
-// 	BEAST_CLASS beast8("warrior");
-// 	BEAST_CLASS beast9("awarrior");
-// 	BEAST_CLASS beast10("warrio");
-
-// 	avengers.addPlayer(&beast1);
-// 	avengers.addPlayer(&beast2);
-// 	avengers.addPlayer(&beast3);
-// 	avengers.addPlayer(&beast4);
-// 	avengers.addPlayer(&beast5);
-// 	avengers.addPlayer(&beast6);
-// 	avengers.addPlayer(&beast7);
-// 	avengers.addPlayer(&beast8);
-// 	avengers.addPlayer(&beast9);
-// 	avengers.addPlayer(&beast10);
-
-// 	avengers.printParams();
-
-// 	beast1.takeDamage(130);
-// 	beast2.takeDamage(145);
-// 	beast3.takeDamage(155);
-// 	beast4.takeDamage(100);
-// 	beast5.takeDamage(149);
-// 	beast10.takeDamage(10);
-
-// 	avengers.printParams();
-
-// 	beast1.applyWinnerReward();
-// 	beast3.applyWinnerReward();
-// 	beast4.applyWinnerReward();
-// 	beast5.applyWinnerReward();
-// 	beast6.applyWinnerReward();
-// 	beast10.applyWinnerReward();
-
-// 	avengers.printParams();
-
-// 	human1.cure();
-// 	berserker1.cure();
-// 	beast1.cure();
-
-// 	avengers.printParams();
-
-// 	avengers.takeDamage(1000);
-
-// 	avengers.printParams();
-// }
